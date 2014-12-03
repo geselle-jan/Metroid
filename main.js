@@ -6,9 +6,6 @@ function preload() {
     game.load.image('Collision', 'assets/collision.png');
     game.load.image('Test', 'assets/tiles-1.png');
     game.load.spritesheet('dude', 'assets/dude.png', 32, 48);
-    game.load.spritesheet('droid', 'assets/droid.png', 32, 32);
-    game.load.image('starSmall', 'assets/star.png');
-    game.load.image('starBig', 'assets/star2.png');
     game.load.image('background', 'assets/background2.png');
 
 }
