@@ -3,6 +3,26 @@
     'use strict';
     Phaser.Physics.Arcade.Body.prototype.velocityPunish = new Phaser.Point(0, 0);
 
+    Phaser.Physics.Arcade.isPointInTriangle = function ( px, py, ax, ay, bx, by, cx, cy) {
+
+        var v0 = [cx-ax,cy-ay];
+        var v1 = [bx-ax,by-ay];
+        var v2 = [px-ax,py-ay];
+
+        var dot00 = (v0[0]*v0[0]) + (v0[1]*v0[1]);
+        var dot01 = (v0[0]*v1[0]) + (v0[1]*v1[1]);
+        var dot02 = (v0[0]*v2[0]) + (v0[1]*v2[1]);
+        var dot11 = (v1[0]*v1[0]) + (v1[1]*v1[1]);
+        var dot12 = (v1[0]*v2[0]) + (v1[1]*v2[1]);
+
+        var invDenom = 1/ (dot00 * dot11 - dot01 * dot01);
+
+        var u = (dot11 * dot02 - dot01 * dot12) * invDenom;
+        var v = (dot00 * dot12 - dot01 * dot02) * invDenom;
+
+        return ((u >= 0) && (v >= 0) && (u + v < 1));
+    };
+
     Phaser.Physics.Arcade.prototype.collideSpriteVsTilemapLayer = function (sprite, tilemapLayer, collideCallback, processCallback, callbackContext) {
         if (!sprite.body) {
             return;
@@ -21,6 +41,8 @@
 
         for (var i = 0, tile, _slope, slopeFunction; i < this._mapData.length; i += 1) {
             tile = this._mapData[i];
+
+            tile.alpha = 0.5;
 
             if (tile.hasOwnProperty('slopeFunction')) {
                 slopeFunction = tile.slopeFunction;
@@ -65,6 +87,7 @@
         if (collides) {
             body.velocityPunish.x = 0;
         }
+        body.y = Math.round(body.position.y);
         return collides;
     };
 
@@ -132,66 +155,225 @@
 
 
     Phaser.Physics.Arcade._collisionHalfTriangleBottomLeft = function (i, body, tile) {
-        if (body.velocity.y > 0 && (body.position.y + body.height - tile.bottom) + (body.position.x - tile.right) <= tile.width / 2 + 1) {
-            body.y = (body.position.x - tile.right) - (body.height - tile.bottom);
+        /*
+          .__
+          |  |
+        a |  |
+        |\p__|
+        | \
+        |__\
+        c   b
+
+        */
+        var collides = Phaser.Physics.Arcade.isPointInTriangle(
+            body.position.x,                // px
+            body.position.y + body.height,  // py
+            tile.worldX - tile.width,       // ax
+            tile.worldY - tile.height,      // ay
+            tile.worldX + (tile.width * 2), // bx
+            tile.worldY + (tile.height * 2),// by
+            tile.worldX - tile.width,       // cx
+            tile.worldY + (tile.height * 2) // cy
+        );
+        if (collides && body.position.x >= tile.worldX) {
+            body.y = tile.worldY - body.height + (body.position.x - tile.worldX);
+            if (body.y < tile.worldY - body.height) {
+                body.y = tile.worldY - body.height;
+            }
+            if (body.y > tile.worldY + tile.height - body.height) {
+                body.y = tile.worldY + tile.height - body.height;
+            }
             body.velocity.y = 500;
             body.blocked.down = true;
-            //body.velocityPunish.x = game.physics.arcade.gravity.y * Math.cos(45) * 0.1;
             return false;
         }
         return true;
     };
 
     Phaser.Physics.Arcade._collisionHalfTriangleBottomRight = function (i, body, tile) {
-        if (body.velocity.y > 0 && (body.position.y + body.height - tile.top) - (body.position.x + body.width - tile.right) >= tile.width / 2 - 1) {
-            body.y = tile.bottom + tile.left - body.position.x - body.width - body.height;
+        /*
+      .__
+      |  |
+      |  | a
+      |__p/|
+         / |
+        /__|
+        c  b
+
+        */
+        var collides = Phaser.Physics.Arcade.isPointInTriangle(
+            body.position.x + body.width,   // px
+            body.position.y + body.height,  // py
+            tile.worldX + (tile.width * 2), // ax
+            tile.worldY - tile.height,      // ay
+            tile.worldX + (tile.width * 2), // bx
+            tile.worldY + (tile.height * 2),// by
+            tile.worldX - tile.width,       // cx
+            tile.worldY + (tile.height * 2) // cy
+        );
+        if (collides && body.position.x + body.width <= tile.worldX + tile.width) {
+            body.y = tile.worldY - body.height + (((body.position.x + body.width) - tile.worldX) * -1 + tile.height);
+            if (body.y < tile.worldY - body.height ) {
+                body.y = tile.worldY - body.height;
+            }
+            if (body.y > tile.worldY + tile.height - body.height ) {
+                body.y = tile.worldY + tile.height - body.height;
+            }
             body.velocity.y = 500;
             body.blocked.down = true;
-            //body.velocityPunish.x = -game.physics.arcade.gravity.y * Math.cos(45) * 0.1;
             return false;
         }
         return true;
     };
 
     Phaser.Physics.Arcade._collisionLongTriangleBottomRightLow = function (i, body, tile) {
-        if (body.velocity.y > 0 && (body.position.y + body.height - tile.top) - ((body.position.x + body.width - tile.right)*1.5) >= tile.width / 4 - 1) {
-            body.y = (tile.left - body.position.x - body.width - body.height)/2 + tile.bottom - tile.height;
-            body.velocity.y = 250;
+        /*       a
+      .__       /|
+      |  |     / |
+      |  |    /  |
+      |__p/|  |  |
+         / |  |  |
+        /__|  |__|
+        c        b
+
+        */
+        var collides = Phaser.Physics.Arcade.isPointInTriangle(
+            body.position.x + body.width,   // px
+            body.position.y + body.height,  // py
+            tile.worldX + (tile.width * 4), // ax
+            tile.worldY - tile.height,      // ay
+            tile.worldX + (tile.width * 4), // bx
+            tile.worldY + (tile.height * 2),// by
+            tile.worldX - (tile.width * 2), // cx
+            tile.worldY + (tile.height * 2) // cy
+        );
+
+        if (collides && body.position.x + body.width <= tile.worldX + tile.width) {
+            body.y = tile.worldY - body.height + (((body.position.x + body.width) - tile.worldX) * -0.5 + tile.height);
+            if (body.y < tile.worldY - body.height ) {
+                body.y = tile.worldY - body.height;
+            }
+            if (body.y > tile.worldY + tile.height - body.height ) {
+                body.y = tile.worldY + tile.height - body.height;
+            }
+            body.velocity.y = 500;
             body.blocked.down = true;
-            //body.velocityPunish.x = -game.physics.arcade.gravity.y * Math.cos(45) * 0.1;
             return false;
         }
         return true;
     };
 
     Phaser.Physics.Arcade._collisionLongTriangleBottomRightHigh = function (i, body, tile) {
-        if (body.velocity.y > 0 && (body.position.y + body.height - tile.top) - ((body.position.x + body.width - tile.right)/2) >= tile.width / 4 - 1) {
-            body.y = (tile.left - body.position.x - body.width - body.height)/2 + tile.bottom - (tile.height * 1.5);
-            body.velocity.y = 250;
+        /*
+            .__
+            |  |
+            |  | a
+            |__p/|
+               / |
+              /  |
+          /|  |  |
+         / |  |  |
+        /__|  |__|
+        c        b
+
+        */
+        var collides = Phaser.Physics.Arcade.isPointInTriangle(
+            body.position.x + body.width,   // px
+            body.position.y + body.height,  // py
+            tile.worldX + (tile.width * 3), // ax
+            tile.worldY - tile.height,      // ay
+            tile.worldX + (tile.width * 3), // bx
+            tile.worldY + (tile.height * 2),// by
+            tile.worldX - (tile.width * 3), // cx
+            tile.worldY + (tile.height * 2) // cy
+        );
+
+        if (collides && body.position.x + body.width <= tile.worldX + tile.width) {
+            body.y = tile.worldY - body.height + (((body.position.x + body.width) - tile.worldX) * -0.5 + tile.height * 0.5);
+            if (body.y < tile.worldY - body.height ) {
+                body.y = tile.worldY - body.height;
+            }
+            if (body.y > tile.worldY + tile.height - body.height ) {
+                body.y = tile.worldY + tile.height - body.height;
+            }
+            body.velocity.y = 500;
             body.blocked.down = true;
-            //body.velocityPunish.x = -game.physics.arcade.gravity.y * Math.cos(45) * 0.1;
             return false;
         }
         return true;
     };
 
     Phaser.Physics.Arcade._collisionLongTriangleBottomLeftLow = function (i, body, tile) {
-        if (body.velocity.y > 0 && (body.position.y + body.height - tile.bottom) + (body.position.x - tile.right) / 2 <= tile.width / 2 + 1) {
-            body.y = (body.position.x - tile.right) / 2 - (body.height - tile.bottom);
-            body.velocity.y = 250;
+        /*
+        a
+        |\      .__
+        | \     |  |
+        |  \    |  |
+        |  |  |\p__|
+        |  |  | \
+        |__|  |__\
+        c         b
+
+        */
+        var collides = Phaser.Physics.Arcade.isPointInTriangle(
+            body.position.x,                // px
+            body.position.y + body.height,  // py
+            tile.worldX - (tile.width*3),   // ax
+            tile.worldY - tile.height,      // ay
+            tile.worldX + (tile.width * 3), // bx
+            tile.worldY + (tile.height * 2),// by
+            tile.worldX - (tile.width * 3), // cx
+            tile.worldY + (tile.height * 2) // cy
+        );
+        if (collides && body.position.x >= tile.worldX) {
+            body.y = tile.worldY - body.height + (body.position.x - tile.worldX) * 0.5 + tile.height * 0.5;
+            if (body.y < tile.worldY - body.height) {
+                body.y = tile.worldY - body.height;
+            }
+            if (body.y > tile.worldY + tile.height - body.height) {
+                body.y = tile.worldY + tile.height - body.height;
+            }
+            body.velocity.y = 500;
             body.blocked.down = true;
-            //body.velocityPunish.x = game.physics.arcade.gravity.y * Math.cos(45) * 0.1;
             return false;
         }
         return true;
     };
 
     Phaser.Physics.Arcade._collisionLongTriangleBottomLeftHigh = function (i, body, tile) {
-        if (body.velocity.y > 0 && (body.position.y + body.height - tile.bottom) + (body.position.x - tile.right) / 2 <= tile.width / 2 + 1) {
-            body.y = (body.position.x - tile.right) / 2 - (body.height - tile.bottom) - (tile.height / 2);
-            body.velocity.y = 250;
+        /*
+          .__
+          |  |
+        a |  |
+        |\p__|
+        | \
+        |  \
+        |  |  |\
+        |  |  | \
+        |__|  |__\
+        c         b
+
+        */
+        var collides = Phaser.Physics.Arcade.isPointInTriangle(
+            body.position.x,                // px
+            body.position.y + body.height,  // py
+            tile.worldX - (tile.width*2),   // ax
+            tile.worldY - tile.height,      // ay
+            tile.worldX + (tile.width * 4), // bx
+            tile.worldY + (tile.height * 2),// by
+            tile.worldX - (tile.width * 4), // cx
+            tile.worldY + (tile.height * 2) // cy
+        );
+        if (collides && body.position.x >= tile.worldX) {
+            body.y = tile.worldY - body.height + (body.position.x - tile.worldX) * 0.5;
+            if (body.y < tile.worldY - body.height) {
+                body.y = tile.worldY - body.height;
+            }
+            if (body.y > tile.worldY + tile.height - body.height) {
+                body.y = tile.worldY + tile.height - body.height;
+            }
+            body.velocity.y = 500;
             body.blocked.down = true;
-            //body.velocityPunish.x = game.physics.arcade.gravity.y * Math.cos(45) * 0.1;
             return false;
         }
         return true;

@@ -1,19 +1,20 @@
-var game = new Phaser.Game(1024, 512, Phaser.CANVAS, 'phaser-example', { preload: preload, create: create, update: update, render: render }, false, false);
+var game = new Phaser.Game(240, 160, Phaser.CANVAS, 'phaser-example', { preload: preload, create: create, update: update, render: render }, false, false);
 
 function preload() {
 
-    game.load.tilemap('level1', 'assets/level1.json', null, Phaser.Tilemap.TILED_JSON);
-    game.load.image('Collision', 'assets/collision.png');
-    game.load.image('Test', 'assets/tiles-1.png');
+    game.load.tilemap('srx1', 'assets/srx1.json', null, Phaser.Tilemap.TILED_JSON);
+    game.load.image('collision', 'assets/collision.png');
+    game.load.image('srx', 'assets/srx.png');
     game.load.spritesheet('dude', 'assets/dude.png', 32, 48);
-    game.load.image('background', 'assets/background2.png');
+    game.load.image('sr388cave', 'assets/sr388cave.png');
 
 }
 
 var map;
 var tileset;
 var layer;
-var deco;
+var deco1;
+var deco2;
 var player;
 var facing = 'left';
 var jumpPressed = false;
@@ -24,20 +25,18 @@ var airTiles;
 
 function create() {
 
-    game.stage.smoothed = false;
-
     game.physics.startSystem(Phaser.Physics.ARCADE);
 
     game.stage.backgroundColor = '#000000';
 
-    bg = game.add.tileSprite(0, 0, 1024, 512, 'background');
+    bg = game.add.tileSprite(0, 0, 480, 320, 'sr388cave');
     bg.fixedToCamera = true;
 
-    map = game.add.tilemap('level1');
+    map = game.add.tilemap('srx1');
 
-    map.addTilesetImage('Collision');
+    map.addTilesetImage('collision');
 
-    layer = map.createLayer('col');
+    layer = map.createLayer('collision');
 
     layer.layer.data.forEach(function(e){
         e.forEach(function(t){
@@ -73,7 +72,11 @@ function create() {
     layer.resizeWorld();
     layer.visible = false
 
-    player = game.add.sprite(32, 32, 'dude');
+
+    map.addTilesetImage('srx');
+    deco2 = map.createLayer('deco2');
+
+    player = game.add.sprite(map.objects.doors[0].x, map.objects.doors[0].y -1, 'dude');
     game.physics.enable(player, Phaser.Physics.ARCADE);
 
     player.body.bounce.y = 0;
@@ -86,8 +89,7 @@ function create() {
 
     game.camera.follow(player);
 
-    map.addTilesetImage('Test');
-    deco = map.createLayer('deco');
+    deco1 = map.createLayer('deco1');
 
     game.physics.arcade.gravity.y = 1000;
 
@@ -99,6 +101,9 @@ function create() {
 
 function update() {
 
+    bg.tilePosition.x = Math.round(game.camera.position.x / -2);
+    bg.tilePosition.y = Math.round(game.camera.position.y / -2);
+
     game.physics.arcade.collide(player, layer);
 
     if (cursors.left.isDown)
@@ -106,11 +111,11 @@ function update() {
         if (player.body.velocity.x > 0) {
             player.body.velocity.x = 0;
         }
-        if (player.body.velocity.x > -350) {
+        if (player.body.velocity.x > -250) {
             player.body.velocity.x += -15;
         }
-        if (player.body.velocity.x < -350) {
-            player.body.velocity.x = -350;
+        if (player.body.velocity.x < -250) {
+            player.body.velocity.x = -250;
         }
 
         if (facing != 'left')
@@ -124,11 +129,11 @@ function update() {
         if (player.body.velocity.x < 0) {
             player.body.velocity.x = 0;
         }
-        if (player.body.velocity.x < 350) {
+        if (player.body.velocity.x < 250) {
             player.body.velocity.x += 15;
         }
-        if (player.body.velocity.x > 350) {
-            player.body.velocity.x = 350;
+        if (player.body.velocity.x > 250) {
+            player.body.velocity.x = 250;
         }
 
         if (facing != 'right')
@@ -168,7 +173,7 @@ function update() {
     
     if (cursors.up.isDown && player.body.onFloor() && !jumpPressed)
     {
-        player.body.velocity.y = -500;
+        player.body.velocity.y = -420;
         jumpPressed = true;
     } else if (cursors.up.isUp && !player.body.onFloor() && jumpPressed) {
         if (player.body.velocity.y < -50) {
