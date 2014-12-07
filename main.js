@@ -22,6 +22,7 @@ var cursors;
 var jumpButton;
 var bg;
 var airTiles;
+var motion = 0;
 
 function create() {
 
@@ -93,9 +94,23 @@ function create() {
 
     game.physics.arcade.gravity.y = 1000;
 
-
     cursors = game.input.keyboard.createCursorKeys();
-    jumpButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+    //jumpButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+    jumpButton = cursors.up;
+
+    jumpButton.isTouched = false;
+
+    $('body').on('touchstart', function (e) {
+        e.preventDefault();
+        jumpButton.isTouched = true;
+    }).on('touchend', function (e) {
+        e.preventDefault();
+        jumpButton.isTouched = false;
+    });
+
+    window.ondeviceorientation = function(event) {
+        motion = Math.round(event.beta);
+    };
 
 }
 
@@ -106,7 +121,7 @@ function update() {
 
     game.physics.arcade.collide(player, layer);
 
-    if (cursors.left.isDown)
+    if (cursors.left.isDown || motion < -5)
     {
         if (player.body.velocity.x > 0) {
             player.body.velocity.x = 0;
@@ -124,7 +139,7 @@ function update() {
             facing = 'left';
         }
     }
-    else if (cursors.right.isDown)
+    else if (cursors.right.isDown || motion > 5)
     {
         if (player.body.velocity.x < 0) {
             player.body.velocity.x = 0;
@@ -171,16 +186,16 @@ function update() {
         }
     }
     
-    if (jumpButton.isDown && player.body.onFloor() && !jumpPressed)
+    if ( (jumpButton.isDown || jumpButton.isTouched) && player.body.onFloor() && !jumpPressed)
     {
         player.body.velocity.y = -420;
         jumpPressed = true;
-    } else if (jumpButton.isUp && !player.body.onFloor() && jumpPressed) {
+    } else if (jumpButton.isUp && !jumpButton.isTouched && !player.body.onFloor() && jumpPressed) {
         if (player.body.velocity.y < -50) {
             player.body.velocity.y = -50;            
         }
         jumpPressed = false;
-    } else if (jumpButton.isUp && player.body.onFloor()) {
+    } else if (jumpButton.isUp && !jumpButton.isTouched && player.body.onFloor()) {
         jumpPressed = false;
     }
 
