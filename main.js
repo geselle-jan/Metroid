@@ -171,16 +171,16 @@ function update() {
         }
     }
     
-    if (cursors.up.isDown && player.body.onFloor() && !jumpPressed)
+    if (jumpButton.isDown && player.body.onFloor() && !jumpPressed)
     {
         player.body.velocity.y = -420;
         jumpPressed = true;
-    } else if (cursors.up.isUp && !player.body.onFloor() && jumpPressed) {
+    } else if (jumpButton.isUp && !player.body.onFloor() && jumpPressed) {
         if (player.body.velocity.y < -50) {
             player.body.velocity.y = -50;            
         }
         jumpPressed = false;
-    } else if (cursors.up.isUp && player.body.onFloor()) {
+    } else if (jumpButton.isUp && player.body.onFloor()) {
         jumpPressed = false;
     }
 

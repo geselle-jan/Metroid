@@ -9,7 +9,7 @@
 			html, body {
 				margin: 0;
 				padding: 0;
-				background: #720;
+				background: #444;
 			}
 			canvas {
 				position: absolute;
@@ -37,6 +37,53 @@
 				height: 300px;
 				background: url(./assets/frame.png);
 			}
+			#d-pad {
+				position: absolute;
+				width: 125px;
+				height: 125px;
+				top: 84px;
+				left: 25px;
+				border-radius: 50%;
+				-webkit-transform: rotate(45deg);
+				        transform: rotate(45deg);
+				overflow: hidden;
+			}
+			#up {
+				position: absolute;
+				width: 50%;
+				height: 50%;
+				top: 0;
+				left: 0;
+			}
+			#right {
+				position: absolute;
+				width: 50%;
+				height: 50%;
+				top: 0;
+				right: 0;
+			}
+			#down {
+				position: absolute;
+				width: 50%;
+				height: 50%;
+				bottom: 0;
+				right: 0;
+			}
+			#left {
+				position: absolute;
+				width: 50%;
+				height: 50%;
+				bottom: 0;
+				left: 0;
+			}
+			#a {
+				position: absolute;
+				width: 55px;
+				height: 55px;
+				top: 103px;
+				left: 505px;
+				border-radius: 50%;
+			}
 		</style>
 		<title>Metroid</title>
 		<meta name="description" content="">
@@ -44,13 +91,22 @@
 	</head>
 	<body>
 
+		<script src="jquery.min.js"></script>
 		<script src="phaser.js"></script>
 		<script src="slopes.js"></script>
 		<script src="main.js"></script>
 
 		<h1>loafer-project</h1>
 
-		<div id="frame"></div>
+		<div id="frame">
+			<div id="d-pad">
+				<div id="up"></div>
+				<div id="right"></div>
+				<div id="down"></div>
+				<div id="left"></div>
+			</div>
+			<div id="a"></div>
+		</div>
 	
 	</body>
 </html>
