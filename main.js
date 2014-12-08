@@ -5,7 +5,7 @@ function preload() {
     game.load.tilemap('srx1', 'assets/srx1.json', null, Phaser.Tilemap.TILED_JSON);
     game.load.image('collision', 'assets/collision.png');
     game.load.image('srx', 'assets/srx.png');
-    game.load.spritesheet('dude', 'assets/dude.png', 32, 48);
+    game.load.spritesheet('samus', 'assets/samus.png', 50, 50);
     game.load.image('sr388cave', 'assets/sr388cave.png');
 
 }
@@ -17,6 +17,8 @@ var deco1;
 var deco2;
 var player;
 var facing = 'left';
+var direction = 'left';
+var turning = false;
 var jumpPressed = false;
 var cursors;
 var jumpButton;
@@ -77,16 +79,19 @@ function create() {
     map.addTilesetImage('srx');
     deco2 = map.createLayer('deco2');
 
-    player = game.add.sprite(map.objects.doors[0].x, map.objects.doors[0].y -1, 'dude');
+    player = game.add.sprite(map.objects.doors[0].x, map.objects.doors[0].y -19, 'samus');
     game.physics.enable(player, Phaser.Physics.ARCADE);
 
     player.body.bounce.y = 0;
     player.body.collideWorldBounds = true;
-    player.body.setSize(16, 32, 8, 16);
+    player.body.setSize(16, 32, 17, 18);
 
-    player.animations.add('left', [0, 1, 2, 3], 10, true);
-    player.animations.add('turn', [4], 20, true);
-    player.animations.add('right', [5, 6, 7, 8], 10, true);
+    player.animations.add('standLeft', [18, 17, 16], 3, true);
+    player.animations.add('standRight', [21, 22, 23], 3, true);
+    player.animations.add('turnLeft', [20, 19], 20, false);
+    player.animations.add('turnRight', [19, 20], 20, false);
+    player.animations.add('walkLeft', [51, 50, 49, 48, 59, 58, 57, 56, 67, 66], 20, true);
+    player.animations.add('walkRight', [52, 53, 54, 55, 60, 61, 62, 63, 68, 69], 20, true);
 
     game.camera.follow(player);
 
@@ -123,38 +128,59 @@ function update() {
 
     if (cursors.left.isDown || motion < -5)
     {
-        if (player.body.velocity.x > 0) {
-            player.body.velocity.x = 0;
+        if (direction != 'left') {
+            direction = 'left';
+            turning = true;
+            player.animations.play('turnLeft');
         }
-        if (player.body.velocity.x > -250) {
-            player.body.velocity.x += -15;
+        if (turning && player.animations.currentAnim.isFinished) {
+            turning = false;
         }
-        if (player.body.velocity.x < -250) {
-            player.body.velocity.x = -250;
+        if (!turning) {
+            if (player.body.velocity.x > 0) {
+                player.body.velocity.x = 0;
+            }
+            if (player.body.velocity.x > -180) {
+                player.body.velocity.x += -15;
+            }
+            if (player.body.velocity.x < -180) {
+                player.body.velocity.x = -180;
+            }
+
+            if (facing != 'left')
+            {
+                facing = 'left';
+                player.animations.play('walkLeft');
+            }
         }
 
-        if (facing != 'left')
-        {
-            player.animations.play('left');
-            facing = 'left';
-        }
     }
     else if (cursors.right.isDown || motion > 5)
     {
-        if (player.body.velocity.x < 0) {
-            player.body.velocity.x = 0;
+        if (direction != 'right') {
+            direction = 'right';
+            turning = true;
+            player.animations.play('turnRight');
         }
-        if (player.body.velocity.x < 250) {
-            player.body.velocity.x += 15;
+        if (turning && player.animations.currentAnim.isFinished) {
+            turning = false;
         }
-        if (player.body.velocity.x > 250) {
-            player.body.velocity.x = 250;
-        }
+        if (!turning) {
+            if (player.body.velocity.x < 0) {
+                player.body.velocity.x = 0;
+            }
+            if (player.body.velocity.x < 180) {
+                player.body.velocity.x += 15;
+            }
+            if (player.body.velocity.x > 180) {
+                player.body.velocity.x = 180;
+            }
 
-        if (facing != 'right')
-        {
-            player.animations.play('right');
-            facing = 'right';
+            if (facing != 'right')
+            {
+                facing = 'right';
+                player.animations.play('walkRight');
+            }
         }
     }
     else
@@ -175,14 +201,26 @@ function update() {
 
             if (facing == 'left')
             {
-                player.frame = 0;
+                player.animations.play('standLeft');
             }
             else
             {
-                player.frame = 5;
+                player.animations.play('standRight');
             }
 
             facing = 'idle';
+        }
+        if (turning && player.animations.currentAnim.isFinished) {
+            if (direction == 'left')
+            {
+                facing = 'left';
+                turning = false;
+            }
+            else
+            {
+                facing = 'right';
+                turning = false;
+            }
         }
     }
     
@@ -204,6 +242,6 @@ function update() {
 function render () {
 
     // game.debug.text(game.time.physicsElapsed, 32, 32);
-    //game.debug.body(player);
-    //game.debug.bodyInfo(player, 16, 24);
+    // game.debug.body(player);
+    // game.debug.bodyInfo(player, 16, 24);
 }
