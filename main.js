@@ -25,6 +25,12 @@ var jumpButton;
 var bg;
 var airTiles;
 var motion = 0;
+var horizontalJump = false;
+var verticalJump = false;
+var gripTiles;
+var powerGrip = false;
+var gripClimb = false;
+var gripFall = false;
 
 function create() {
 
@@ -84,7 +90,7 @@ function create() {
 
     player.body.bounce.y = 0;
     player.body.collideWorldBounds = true;
-    player.body.setSize(16, 32, 17, 18);
+    player.body.setSize(16, 32, 17, 14);
 
     player.animations.add('standLeft', [18, 17, 16], 3, true);
     player.animations.add('standRight', [21, 22, 23], 3, true);
@@ -92,12 +98,14 @@ function create() {
     player.animations.add('turnRight', [19, 20], 20, false);
     player.animations.add('walkLeft', [51, 50, 49, 48, 59, 58, 57, 56, 67, 66], 20, true);
     player.animations.add('walkRight', [52, 53, 54, 55, 60, 61, 62, 63, 68, 69], 20, true);
+    player.animations.add('horizontalJumpLeft', [259, 258, 257, 256, 267, 266, 265, 264], 30, true);
+    player.animations.add('horizontalJumpRight', [260, 261, 262, 263, 268, 269, 270, 271], 30, true);
 
     game.camera.follow(player);
 
     deco1 = map.createLayer('deco1');
 
-    game.physics.arcade.gravity.y = 1000;
+    player.body.gravity.y = 1000;
 
     cursors = game.input.keyboard.createCursorKeys();
     //jumpButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
@@ -126,7 +134,7 @@ function update() {
 
     game.physics.arcade.collide(player, layer);
 
-    if (cursors.left.isDown || motion < -5)
+    if ((cursors.left.isDown || motion < -5) && !cursors.right.isDown && !horizontalJump && !powerGrip)
     {
         if (direction != 'left') {
             direction = 'left';
@@ -155,7 +163,7 @@ function update() {
         }
 
     }
-    else if (cursors.right.isDown || motion > 5)
+    else if ((cursors.right.isDown || motion > 5) && !cursors.left.isDown && !horizontalJump && !powerGrip)
     {
         if (direction != 'right') {
             direction = 'right';
@@ -185,17 +193,10 @@ function update() {
     }
     else
     {
-        if (player.body.onFloor()) {
-            if (player.body.velocity.x > 0) {
-                player.body.velocity.x += -50;
-            } else if (player.body.velocity.x < 0) {
-                player.body.velocity.x += 50;
-            }
-            if (player.body.velocity.x < 50 && player.body.velocity.x > -50) {
-                player.body.velocity.x = 0;
-            }
+        if (player.body.onFloor() || verticalJump) {
+            player.body.velocity.x = 0;
         }
-        if (facing != 'idle')
+        if (facing != 'idle' && player.body.onFloor())
         {
             player.animations.stop();
 
@@ -223,11 +224,55 @@ function update() {
             }
         }
     }
+
+    if (player.body.onFloor()) {
+        if (horizontalJump) {
+            if (direction == 'left')
+            {
+                if (cursors.left.isDown) {
+                    player.animations.play('walkLeft');
+                } else {
+                    player.animations.play('standLeft');
+                }
+            }
+            else
+            {
+                if (cursors.right.isDown) {
+                    player.animations.play('walkRight');
+                } else {
+                    player.animations.play('standRight');
+                }
+            }
+            horizontalJump = false;
+            player.body.gravity.y = 1000;
+        }
+        verticalJump = false;
+    }
     
     if ( (jumpButton.isDown || jumpButton.isTouched) && player.body.onFloor() && !jumpPressed)
     {
         player.body.velocity.y = -420;
         jumpPressed = true;
+        if (cursors.right.isDown || cursors.left.isDown) {
+            horizontalJump = true;
+            player.body.gravity.y = 600;
+            player.body.velocity.y = -290;
+            if (cursors.left.isDown) {
+                player.body.velocity.x = -90;
+                direction = 'left';
+                turning = false;
+                player.animations.stop();
+                player.animations.play('horizontalJumpLeft');
+            } else {
+                player.body.velocity.x = 90;
+                direction = 'right';
+                turning = false;
+                player.animations.stop();
+                player.animations.play('horizontalJumpRight');
+            }
+        } else {
+            verticalJump = true;
+        }
     } else if (jumpButton.isUp && !jumpButton.isTouched && !player.body.onFloor() && jumpPressed) {
         if (player.body.velocity.y < -50) {
             player.body.velocity.y = -50;            
@@ -237,11 +282,83 @@ function update() {
         jumpPressed = false;
     }
 
+    if (horizontalJump) {
+        if (direction == 'left') {
+            player.body.velocity.x = -90;
+        } else {
+            player.body.velocity.x = 90;
+        }
+    }
+
+    if (player.body.velocity.y > 0 && (cursors.left.isDown || cursors.right.isDown)) {
+
+        gripTiles = layer.getTiles(
+            player.body.position.x - map.tileWidth / 2,
+            player.body.position.y,
+            player.body.width + map.tileWidth,
+            player.body.height,
+            false,
+            false
+        );
+
+        for (var i = 0, tile, spacingY; i < gripTiles.length; i += 1) {
+            tile = gripTiles[i];
+            if (tile.index > -1) {
+                spacingY = player.body.position.y - tile.worldY
+                if (spacingY > 0 && spacingY < tile.height / 2) {
+                    if (map.getTileAbove(0, tile.x, tile.y).index == -1) {
+                        horizontalJump = false;
+                        verticalJump = false;
+                        player.body.velocity.y = 0;
+                        player.body.velocity.x = 0;
+                        player.body.position.y = tile.worldY;
+                        if (direction == 'left') {
+                            player.body.position.x = tile.worldX + tile.width;
+                        } else {
+                            player.body.position.x = tile.worldX - player.body.width;
+                        }
+                        player.body.gravity.y = 0;
+                        powerGrip = true;
+                    }
+                }
+            }
+        }
+
+    }
+
+    if (powerGrip) {
+        if (cursors.down.isDown && gripFall) {
+            player.body.gravity.y = 1000;
+            powerGrip = false;
+            gripFall = false;
+            gripClimb = false;
+        }
+        if (cursors.up.isDown && gripClimb) {
+            player.body.gravity.y = 1000;
+            powerGrip = false;
+            gripFall = false;
+            gripClimb = false;
+            jumpPressed = true;
+            player.body.position.y = player.body.position.y - player.body.height;
+            if (direction == 'left') {
+                player.body.position.x -= map.tileWidth;
+            } else {
+                player.body.position.x += map.tileWidth;
+            }
+        }
+        if (cursors.up.isUp) {
+            gripClimb = true;
+        }
+        if (cursors.down.isUp) {
+            gripFall = true;
+        }
+    }
+
 }
 
 function render () {
 
     // game.debug.text(game.time.physicsElapsed, 32, 32);
-    // game.debug.body(player);
+     game.debug.body(player);
     // game.debug.bodyInfo(player, 16, 24);
 }

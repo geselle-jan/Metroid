@@ -42,8 +42,6 @@
         for (var i = 0, tile, _slope, slopeFunction; i < this._mapData.length; i += 1) {
             tile = this._mapData[i];
 
-            tile.alpha = 0.5;
-
             if (tile.hasOwnProperty('slopeFunction')) {
                 slopeFunction = tile.slopeFunction;
             } else {
