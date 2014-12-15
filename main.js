@@ -1,12 +1,16 @@
-var game = new Phaser.Game(240, 160, Phaser.CANVAS, 'phaser-example', { preload: preload, create: create, update: update, render: render }, false, false);
+var game    = new Phaser.Game(240, 160, Phaser.CANVAS, 'phaser-example', { preload: preload, create: create, update: update, render: render }, false, false),
+    g       = game,
+    samus   = new Samus(game);
+g.s = samus;
+
 
 function preload() {
 
     game.load.tilemap('srx1', 'assets/srx1.json', null, Phaser.Tilemap.TILED_JSON);
     game.load.image('collision', 'assets/collision.png');
     game.load.image('srx', 'assets/srx.png');
-    game.load.spritesheet('samus', 'assets/samus.png', 50, 50);
     game.load.image('sr388cave', 'assets/sr388cave.png');
+    samus.preload();
 
 }
 
@@ -88,6 +92,8 @@ function create() {
     map.addTilesetImage('srx');
     deco2 = map.createLayer('deco2');
 
+    samus.create(map.objects.doors[0].x, map.objects.doors[0].y);
+
     player = game.add.sprite(map.objects.doors[0].x, map.objects.doors[0].y -19, 'samus');
     game.physics.enable(player, Phaser.Physics.ARCADE);
 
@@ -124,6 +130,8 @@ function update() {
 
     bg.tilePosition.x = Math.round(game.camera.position.x / -2);
     bg.tilePosition.y = Math.round(game.camera.position.y / -2);
+
+    samus.update(layer);
 
     game.physics.arcade.collide(player, layer);
 
