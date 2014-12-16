@@ -26,9 +26,9 @@ function create() {
 
     game.stage.backgroundColor = '#000000';
 
-    bg = game.add.tileSprite(0, 0, 480, 320, 'brown');
-
     g.map = game.add.tilemap('sector01_room01');
+
+    bg = game.add.tileSprite(0, 0, 240, 160, g.map.images[0].properties.key);
 
     g.map.addTilesetImage('collision');
 
@@ -63,7 +63,6 @@ function create() {
     g.collisionLayer.resizeWorld();
     g.collisionLayer.visible = false
 
-
     g.map.addTilesetImage('yellow');
     deco2 = g.map.createLayer('deco2');
 
@@ -75,8 +74,8 @@ function create() {
 
 function update() {
 
-    bg.tilePosition.x = Math.round(game.camera.position.x / -2 + game.camera.width / 4);
-    bg.tilePosition.y = Math.round(game.camera.position.y / -2 + game.camera.height / 4);
+    bg.tilePosition.x = Math.round(game.camera.position.x / -2 + game.camera.width / 4) + g.map.images[0].x;
+    bg.tilePosition.y = Math.round(game.camera.position.y / -2 + game.camera.height / 4) + g.map.images[0].y;
 
     samus.update(g.collisionLayer);
 }
