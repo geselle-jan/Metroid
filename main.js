@@ -14,9 +14,7 @@ function preload() {
 
 }
 
-var map;
 var tileset;
-var layer;
 var deco1;
 var deco2;
 var player;
@@ -36,7 +34,7 @@ var gripClimb = false;
 var gripFall = false;
 var setSpriteOffset = function (x,y) {
     player.body.setSize(16, 32, x + 17, y * 2 + 14);
-    player.anchor.setTo(x / map.tileWidth, y / map.tileWidth);
+    player.anchor.setTo(x / g.map.tileWidth, y / g.map.tileWidth);
 };
 
 function create() {
@@ -48,13 +46,13 @@ function create() {
     bg = game.add.tileSprite(0, 0, 480, 320, 'sr388cave');
     bg.fixedToCamera = true;
 
-    map = game.add.tilemap('srx1');
+    g.map = game.add.tilemap('srx1');
 
-    map.addTilesetImage('collision');
+    g.map.addTilesetImage('collision');
 
-    layer = map.createLayer('collision');
+    g.collisionLayer = g.map.createLayer('collision');
 
-    layer.layer.data.forEach(function(e){
+    g.collisionLayer.layer.data.forEach(function(e){
         e.forEach(function(t){
             if (t.index < 0) {
                 // none
@@ -80,21 +78,21 @@ function create() {
         });
     });
 
-    map.setCollision([1,2,3,4,5,6,7]);
+    g.map.setCollision([1,2,3,4,5,6,7]);
 
     //  Un-comment this on to see the collision tiles
     //layer.debug = true;
 
-    layer.resizeWorld();
-    layer.visible = false
+    g.collisionLayer.resizeWorld();
+    g.collisionLayer.visible = false
 
 
-    map.addTilesetImage('srx');
-    deco2 = map.createLayer('deco2');
+    g.map.addTilesetImage('srx');
+    deco2 = g.map.createLayer('deco2');
 
-    samus.create(map.objects.doors[0].x, map.objects.doors[0].y);
+    samus.create(g.map.objects.doors[0].x, g.map.objects.doors[0].y);
 
-    player = game.add.sprite(map.objects.doors[0].x, map.objects.doors[0].y -19, 'samus');
+    player = game.add.sprite(g.map.objects.doors[0].x, g.map.objects.doors[0].y -19, 'samus');
     game.physics.enable(player, Phaser.Physics.ARCADE);
 
     player.body.bounce.y = 0;
@@ -114,7 +112,7 @@ function create() {
 
     game.camera.follow(player);
 
-    deco1 = map.createLayer('deco1');
+    deco1 = g.map.createLayer('deco1');
 
     player.body.gravity.y = 1500;
 
@@ -131,9 +129,9 @@ function update() {
     bg.tilePosition.x = Math.round(game.camera.position.x / -2);
     bg.tilePosition.y = Math.round(game.camera.position.y / -2);
 
-    samus.update(layer);
+    samus.update(g.collisionLayer);
 
-    game.physics.arcade.collide(player, layer);
+    game.physics.arcade.collide(player, g.collisionLayer);
 
     if (cursors.left.isDown && !cursors.right.isDown && !horizontalJump && !powerGrip)
     {
@@ -245,7 +243,7 @@ function update() {
                 }
             }
             horizontalJump = false;
-            player.body.gravity.y = 1000;
+            player.body.gravity.y = 1500;
         }
         verticalJump = false;
     }
@@ -293,7 +291,7 @@ function update() {
 
     if (player.body.velocity.y > 0 && (cursors.left.isDown || cursors.right.isDown)) {
 
-        gripTiles = layer.getTiles(
+        gripTiles = g.collisionLayer.getTiles(
             player.body.position.x - 2,
             player.body.position.y,
             player.body.width + 4,
@@ -313,15 +311,15 @@ function update() {
                     (
                         (
                             direction == 'left'
-                         && tile.worldX + map.tileWidth / 2 < player.body.position.x
+                         && tile.worldX + g.map.tileWidth / 2 < player.body.position.x
                         )
                      || (
                             direction == 'right'
-                         && tile.worldX + map.tileWidth / 2 > player.body.position.x + player.body.width
+                         && tile.worldX + g.map.tileWidth / 2 > player.body.position.x + player.body.width
                         )
                     )
                 ) {
-                    if (map.getTileAbove(0, tile.x, tile.y).index == -1) {
+                    if (g.map.getTileAbove(0, tile.x, tile.y).index == -1) {
                         horizontalJump = false;
                         verticalJump = false;
                         player.body.velocity.y = 0;
@@ -368,9 +366,9 @@ function update() {
             jumpPressed = true;
             player.body.position.y = player.body.position.y - player.body.height;
             if (direction == 'left') {
-                player.body.position.x -= map.tileWidth;
+                player.body.position.x -= g.map.tileWidth;
             } else {
-                player.body.position.x += map.tileWidth;
+                player.body.position.x += g.map.tileWidth;
             }
             player.animations.stop();
             if (direction == 'left') {
