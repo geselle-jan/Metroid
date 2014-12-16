@@ -150,7 +150,7 @@ Samus.prototype.defineButtons = function () {
 		Phaser.Keyboard.D
 	);
 	s.b.a		= s.g.input.keyboard.addKey(
-		Phaser.Keyboard.W
+		Phaser.Keyboard.UP
 	);
 	s.b.b		= s.g.input.keyboard.addKey(
 		Phaser.Keyboard.LEFT
