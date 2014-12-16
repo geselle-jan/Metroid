@@ -6,10 +6,11 @@ g.s = samus;
 
 function preload() {
 
-    game.load.tilemap('srx1', 'assets/srx1.json', null, Phaser.Tilemap.TILED_JSON);
-    game.load.image('collision', 'assets/collision.png');
-    game.load.image('srx', 'assets/srx.png');
-    game.load.image('sr388cave', 'assets/sr388cave.png');
+    game.load.tilemap('sector01_room01', 'assets/rooms/sector01_room01.json', null, Phaser.Tilemap.TILED_JSON);
+    game.load.image('collision', 'assets/tilesets/collision.png');
+    game.load.image('yellow', 'assets/tilesets/yellow.png');
+    game.load.image('sr388cave', 'assets/bg/sr388cave.png');
+    game.load.image('brown', 'assets/bg/brown.png');
     samus.preload();
 
 }
@@ -25,10 +26,9 @@ function create() {
 
     game.stage.backgroundColor = '#000000';
 
-    bg = game.add.tileSprite(0, 0, 480, 320, 'sr388cave');
-    bg.fixedToCamera = true;
+    bg = game.add.tileSprite(0, 0, 480, 320, 'brown');
 
-    g.map = game.add.tilemap('srx1');
+    g.map = game.add.tilemap('sector01_room01');
 
     g.map.addTilesetImage('collision');
 
@@ -64,7 +64,7 @@ function create() {
     g.collisionLayer.visible = false
 
 
-    g.map.addTilesetImage('srx');
+    g.map.addTilesetImage('yellow');
     deco2 = g.map.createLayer('deco2');
 
     samus.create(g.map.objects.doors[0].x, g.map.objects.doors[0].y);
@@ -75,8 +75,8 @@ function create() {
 
 function update() {
 
-    bg.tilePosition.x = Math.round(game.camera.position.x / -2);
-    bg.tilePosition.y = Math.round(game.camera.position.y / -2);
+    bg.tilePosition.x = Math.round(game.camera.position.x / -2 + game.camera.width / 4);
+    bg.tilePosition.y = Math.round(game.camera.position.y / -2 + game.camera.height / 4);
 
     samus.update(g.collisionLayer);
 }

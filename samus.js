@@ -172,7 +172,7 @@ Samus.prototype.defineButtons = function () {
 
 Samus.prototype.create = function (x, y) {
 	var s						= this;
-    s.sprite 					= s.g.add.sprite(x, y -19, 'samus');
+    s.sprite 					= s.g.add.sprite(x -16, y -19, 'samus');
     s.g.physics.enable(s.sprite, Phaser.Physics.ARCADE);
     s.body						= s.sprite.body;
     s.body.bounce.y				= 0;
@@ -421,7 +421,8 @@ Samus.prototype.grabEdge = function () {
 	    ),
 	    i,
 	    tile,
-	    spacingY;
+	    spacingY,
+	    above;
     for (i = 0; i < gripTiles.length; i += 1) {
         tile = gripTiles[i];
         if (tile.index > -1) {
@@ -441,7 +442,8 @@ Samus.prototype.grabEdge = function () {
                     )
                 )
             ) {
-                if (g.map.getTileAbove(0, tile.x, tile.y).index == -1) {
+            	above = g.map.getTileAbove(0, tile.x, tile.y);
+                if (above && above.index == -1) {
                 	s.set('hJump', false);
                 	s.set('vJump', false);
                     s.body.velocity.y = 0;
