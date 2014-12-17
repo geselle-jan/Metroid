@@ -1,7 +1,7 @@
 { "height":10,
  "layers":[
         {
-         "height":10,
+         "height":0,
          "image":"..\/bg\/brown.png",
          "name":"bg",
          "opacity":1,
@@ -11,7 +11,7 @@
             },
          "type":"imagelayer",
          "visible":true,
-         "width":15,
+         "width":0,
          "x":-32,
          "y":0
         }, 
@@ -66,6 +66,20 @@
                  "width":16,
                  "x":112,
                  "y":32
+                }, 
+                {
+                 "height":64,
+                 "name":"1",
+                 "properties":
+                    {
+
+                    },
+                 "rotation":0,
+                 "type":"door",
+                 "visible":true,
+                 "width":64,
+                 "x":208,
+                 "y":48
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -84,7 +98,7 @@
  "tilesets":[
         {
          "firstgid":1,
-         "image":"..\/collision.png",
+         "image":"..\/tilesets\/collision.png",
          "imageheight":16,
          "imagewidth":112,
          "margin":0,
@@ -99,7 +113,7 @@
         }, 
         {
          "firstgid":8,
-         "image":"..\/srx.png",
+         "image":"..\/tilesets\/srx.png",
          "imageheight":432,
          "imagewidth":256,
          "margin":0,
@@ -114,7 +128,7 @@
         }, 
         {
          "firstgid":440,
-         "image":"..\/yellow.png",
+         "image":"..\/tilesets\/yellow.png",
          "imageheight":384,
          "imagewidth":256,
          "margin":0,

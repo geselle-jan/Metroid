@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.0" orientation="orthogonal" renderorder="right-down" width="15" height="10" tilewidth="16" tileheight="16">
  <tileset firstgid="1" name="collision" tilewidth="16" tileheight="16">
-  <image source="../collision.png" width="112" height="16"/>
+  <image source="../tilesets/collision.png" width="112" height="16"/>
  </tileset>
  <tileset firstgid="8" name="srx" tilewidth="16" tileheight="16">
-  <image source="../srx.png" width="256" height="432"/>
+  <image source="../tilesets/srx.png" width="256" height="432"/>
  </tileset>
  <tileset firstgid="440" name="yellow" tilewidth="16" tileheight="16">
-  <image source="../yellow.png" width="256" height="384"/>
+  <image source="../tilesets/yellow.png" width="256" height="384"/>
  </tileset>
  <imagelayer name="bg" x="-32">
   <image source="../bg/brown.png"/>
