@@ -118,7 +118,7 @@ var Samus = function (game) {
 
 Samus.prototype.preload = function () {
 	var s	= this;
-	s.g.load.spritesheet('samus', 'assets/samus.png', 50, 50);
+	s.g.load.spritesheet('samus', 'assets/sprites/samus.png', 50, 50);
 	return s;
 };
 
@@ -180,10 +180,10 @@ Samus.prototype.create = function (x, y) {
     s.body.collideWorldBounds	= true;
     s.body.setSize(16, 32, 17, 14);
     s.g.camera.follow(s.sprite);
-    s.addAnimations();
-    s.defineButtons();
-    s.set('right', true);
-    s.sprite.animations.play('standRight');
+    s.addAnimations()
+     .defineButtons()
+     .set('right', true)
+     .sprite.animations.play('standRight');
 	return s;
 };
 
@@ -523,7 +523,7 @@ Samus.prototype.updateMovement = function () {
 		s.landing();
 	}
 	if (s.isOnGround()) {
-		if (s.b.a.isDown && s.isOnGround && s.is('jumpPossible')) {
+		if (s.b.a.isDown && s.sprite.body.onFloor() && s.is('jumpPossible')) {
 			s.jump();
 		} else if (s.isExclusiveDirection()) {
 			if (s.b.left.isDown) {

@@ -59,5 +59,6 @@
  </layer>
  <objectgroup name="doors">
   <object name="spawn" type="spawn" x="112" y="32" width="16" height="32"/>
+  <object name="1" type="door" x="208" y="48" width="64" height="64"/>
  </objectgroup>
 </map>
