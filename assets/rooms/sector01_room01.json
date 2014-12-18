@@ -2,7 +2,7 @@
  "layers":[
         {
          "height":0,
-         "image":"..\/bg\/brown.png",
+         "image":"..\/backgrounds\/brown.png",
          "name":"bg",
          "opacity":1,
          "properties":
@@ -78,7 +78,7 @@
                  "type":"door",
                  "visible":true,
                  "width":64,
-                 "x":208,
+                 "x":216,
                  "y":48
                 }],
          "opacity":1,

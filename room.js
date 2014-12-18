@@ -80,19 +80,33 @@ Room.prototype.addTilesetImages = function () {
     return r;
 };
 
+Room.prototype.addDoors = function () {
+    var r       = this,
+        doors   = r.t.objects.doors;
+    for (var i = doors.length - 1; i >= 0; i--) {
+        if (doors[i].type == 'door') {
+            r.d[doors[i].name] = new Door(r.g, doors[i]);
+            r.d[doors[i].name].create();
+        }
+    }
+    return r;
+};
+
 Room.prototype.create = function () {
     var r       = this;
     r.tilemap   = r.g.add.tilemap(r.name);
-    r.add
     r.t         = r.tilemap;
     r.layers    = {};
     r.l         = r.layers;
+    r.doors     = {};
+    r.d         = r.doors;
     r.addTilesetImages()
      .addBackgroundLayer()
      .addCollisionLayer()
      .addDecoLayer(2)
      .addPlayerLayer(0)
-     .addDecoLayer(1);
+     .addDecoLayer(1)
+     .addDoors();
     return r;
 };
 
@@ -113,9 +127,30 @@ Room.prototype.setBackgroundPosition = function () {
     return r;
 };
 
+Room.prototype.checkDoorCollision = function () {
+    var r = this,
+        door;
+    for (door in r.d) {
+        if (r.d.hasOwnProperty(door)) {
+            if (Phaser.Rectangle.intersects(
+                g.s.body,
+                r.d[door].body
+            )) {
+                r.g.m.r.destroy();
+                r.g.m.r = r.g.m.rooms.srx1;
+                r.g.m.create();
+            }
+        }
+    }
+    return r;
+};
+
 Room.prototype.update = function () {
     var r       = this;
-    r.setBackgroundPosition();
+    if (g.m.r === r) {
+        r.setBackgroundPosition()
+         .checkDoorCollision();
+    }
     return r;
 };
 

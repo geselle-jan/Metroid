@@ -20,6 +20,9 @@ Map.prototype.data = {
     backgrounds: [
         'brown',
         'sr388cave'
+    ],
+    sprites: [
+        'door',
     ]
 };
 
@@ -59,7 +62,8 @@ Map.prototype.preload = function () {
     var m = this;
     m.eachRoom('preload')
      .loadAssets('tilesets')
-     .loadAssets('backgrounds');
+     .loadAssets('backgrounds')
+     .loadAssets('sprites');
     return m;
 };
 

@@ -7,7 +7,7 @@
   <image source="../tilesets/srx.png" width="256" height="432"/>
  </tileset>
  <imagelayer name="bg" y="64">
-  <image source="../bg/sr388cave.png"/>
+  <image source="../backgrounds/sr388cave.png"/>
   <properties>
    <property name="key" value="sr388cave"/>
   </properties>
@@ -85,7 +85,7 @@
 </data>
  </layer>
  <objectgroup name="doors">
-  <object name="1" type="door" x="-32" y="208" width="64" height="64"/>
-  <object name="2" type="door" x="448" y="208" width="64" height="64"/>
+  <object name="1" type="door" x="-40" y="208" width="64" height="64"/>
+  <object name="2" type="door" x="456" y="208" width="64" height="64"/>
  </objectgroup>
 </map>

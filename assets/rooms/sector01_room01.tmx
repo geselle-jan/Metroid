@@ -10,7 +10,7 @@
   <image source="../tilesets/yellow.png" width="256" height="384"/>
  </tileset>
  <imagelayer name="bg" x="-32">
-  <image source="../bg/brown.png"/>
+  <image source="../backgrounds/brown.png"/>
   <properties>
    <property name="key" value="brown"/>
   </properties>
@@ -59,6 +59,6 @@
  </layer>
  <objectgroup name="doors">
   <object name="spawn" type="spawn" x="112" y="32" width="16" height="32"/>
-  <object name="1" type="door" x="208" y="48" width="64" height="64"/>
+  <object name="1" type="door" x="216" y="48" width="64" height="64"/>
  </objectgroup>
 </map>
