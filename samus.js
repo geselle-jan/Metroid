@@ -170,20 +170,35 @@ Samus.prototype.defineButtons = function () {
 	return s;
 };
 
-Samus.prototype.create = function (x, y) {
+Samus.prototype.create = function () {
 	var s						= this;
-    s.sprite 					= s.g.add.sprite(x -16, y -19, 'samus');
+    s.sprite 					= s.g.add.sprite(0, 0, 'samus');
     s.g.physics.enable(s.sprite, Phaser.Physics.ARCADE);
     s.body						= s.sprite.body;
     s.body.bounce.y				= 0;
     s.body.gravity.y 			= 1500;
-    s.body.collideWorldBounds	= true;
+    s.body.collideWorldBounds	= true; 
     s.body.setSize(16, 32, 17, 14);
     s.g.camera.follow(s.sprite);
     s.addAnimations()
      .defineButtons()
      .set('right', true)
      .sprite.animations.play('standRight');
+	return s;
+};
+
+Samus.prototype.setPosition = function (x, y, direction) {
+	var s = this;
+    s.sprite.position.setTo(x -16, y -14);
+    s.sprite.bringToTop();
+    s.set('right', false)
+     .set('left', false)
+     .set(direction, true)
+     .sprite.animations.play(
+     	'stand'
+      + direction.charAt(0).toUpperCase()
+      + direction.slice(1)
+      );
 	return s;
 };
 
@@ -222,7 +237,7 @@ Samus.prototype.set = function (state, value) {
 
 Samus.prototype.update = function () {
 	var s	= this;
-	s.g.physics.arcade.collide(s.sprite, s.g.collisionLayer);
+	s.g.physics.arcade.collide(s.sprite, s.g.m.r.l.collision);
 	s.updateMovement();
 	return s;
 };
@@ -237,7 +252,7 @@ Samus.prototype.setSpriteOffset = function (x, y) {
 	x = x / -2;
 	y = y / -2;
     s.body.setSize(16, 32, x + 17, y * 2 + 14);
-    s.sprite.anchor.setTo(x / g.map.tileWidth, y / g.map.tileWidth);
+    s.sprite.anchor.setTo(x / s.g.m.r.t.tileWidth, y / s.g.m.r.t.tileWidth);
 	return s;
 };
 
@@ -411,7 +426,7 @@ Samus.prototype.landing = function () {
 
 Samus.prototype.grabEdge = function () {
 	var s			= this,
-		gripTiles	= s.g.collisionLayer.getTiles(
+		gripTiles	= s.g.m.r.l.collision.getTiles(
 	        s.body.position.x - 2,
 	        s.body.position.y,
 	        s.body.width + 4,
@@ -434,15 +449,15 @@ Samus.prototype.grabEdge = function () {
                 (
                     (
                         s.is('left')
-                     && tile.worldX + g.map.tileWidth / 2 < s.body.position.x
+                     && tile.worldX + s.g.m.r.t.tileWidth / 2 < s.body.position.x
                     )
                  || (
                         s.is('right')
-                     && tile.worldX + g.map.tileWidth / 2 > s.body.position.x + s.body.width
+                     && tile.worldX + s.g.m.r.t.tileWidth / 2 > s.body.position.x + s.body.width
                     )
                 )
             ) {
-            	above = g.map.getTileAbove(0, tile.x, tile.y);
+            	above = s.g.m.r.t.getTileAbove(0, tile.x, tile.y);
                 if (above && above.index == -1) {
                 	s.set('hJump', false);
                 	s.set('vJump', false);
@@ -490,9 +505,9 @@ Samus.prototype.powerGrip = function () {
         s.set('jumpPossible', false);
         s.body.position.y = s.body.position.y - s.body.height;
         if (s.is('left')) {
-            s.body.position.x -= g.map.tileWidth;
+            s.body.position.x -= s.g.m.r.t.tileWidth;
         } else {
-            s.body.position.x += g.map.tileWidth;
+            s.body.position.x += s.g.m.r.t.tileWidth;
         }
         s.sprite.animations.stop();
         if (s.is('left')) {
