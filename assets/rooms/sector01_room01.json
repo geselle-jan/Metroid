@@ -72,7 +72,8 @@
                  "name":"1",
                  "properties":
                     {
-
+                     "door":"1",
+                     "room":"srx1"
                     },
                  "rotation":0,
                  "type":"door",

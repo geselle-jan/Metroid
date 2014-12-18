@@ -6,6 +6,10 @@ var Door = function (game, data) {
 
 Door.prototype.create = function () {
     var d               = this;
+    d.to                = {
+        room: d.d.properties.room,
+        door: d.d.properties.door
+    };
     d.sprite            = d.g.add.sprite(d.d.x, d.d.y, 'door');
     d.g.physics.enable(d.sprite, Phaser.Physics.ARCADE);
     d.body              = d.sprite.body;

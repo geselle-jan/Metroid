@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.0" orientation="orthogonal" renderorder="right-down" width="75" height="10" tilewidth="16" tileheight="16">
  <tileset firstgid="1" name="collision" tilewidth="16" tileheight="16">
-  <image source="../collision.png" width="112" height="16"/>
+  <image source="../tilesets/collision.png" width="112" height="16"/>
  </tileset>
  <tileset firstgid="8" name="srx" tilewidth="16" tileheight="16">
-  <image source="../srx.png" width="256" height="432"/>
+  <image source="../tilesets/srx.png" width="256" height="432"/>
  </tileset>
+ <imagelayer name="bg">
+  <image source="../backgrounds/sr388cave.png"/>
+  <properties>
+   <property name="key" value="sr388cave"/>
+  </properties>
+ </imagelayer>
  <layer name="collision" width="75" height="10">
   <data encoding="csv">
 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
@@ -48,4 +54,18 @@
 16,16,16,16,16,202,203,129,130,125,126,131,126,204,205,16,16,16,16,16,202,203,98,99,127,128,131,126,204,205,16,16,206,207,98,99,128,125,126,128,125,126,127,131,129,130,131,98,99,125,126,125,127,126,129,130,128,129,130,131,98,99,125,126,128,98,99,204,205,16,16,16,16,16,16
 </data>
  </layer>
+ <objectgroup name="doors">
+  <object name="1" type="door" x="-40" y="48" width="64" height="64">
+   <properties>
+    <property name="door" value="2"/>
+    <property name="room" value="srx1"/>
+   </properties>
+  </object>
+  <object name="2" type="door" x="1176" y="48" width="64" height="64">
+   <properties>
+    <property name="door" value="1"/>
+    <property name="room" value="srx3"/>
+   </properties>
+  </object>
+ </objectgroup>
 </map>

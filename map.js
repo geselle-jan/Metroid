@@ -10,7 +10,9 @@ var Map = function (game) {
 Map.prototype.data = {
     rooms: [
         'sector01_room01',
-        'srx1'
+        'srx1',
+        'srx2',
+        'srx3'
     ],
     tilesets: [
         'collision',
@@ -67,14 +69,22 @@ Map.prototype.preload = function () {
     return m;
 };
 
-Map.prototype.create = function () {
+Map.prototype.create = function (door) {
     var m = this;
-    m.r.create();
+    m.r.create(door);
     return m;
 };
 
 Map.prototype.update = function () {
     var m = this;
     m.r.update();
+    return m;
+};
+
+Map.prototype.useDoorTo = function (room, door) {
+    var m = this;
+    m.r.destroy();
+    m.r = m.rooms[room];
+    m.create(door);
     return m;
 };

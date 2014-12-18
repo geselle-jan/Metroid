@@ -67,8 +67,29 @@ Room.prototype.addDecoLayer = function (number) {
 };
 
 Room.prototype.addPlayerLayer = function (doorIndex) {
-    var r       = this;
-    r.g.s.setPosition(r.t.objects.doors[doorIndex].x, r.t.objects.doors[doorIndex].y - 16, 'right');
+    var r = this,
+        s = r.g.s;
+    if (doorIndex == 0) {
+        s.setPosition(
+            r.t.objects.doors[doorIndex].x,
+            r.t.objects.doors[doorIndex].y - 16,
+            'right'
+        );
+    } else {
+        if (s.is('right')) {
+            s.setPosition(
+                r.d[doorIndex].d.x + 64 + 8,
+                r.d[doorIndex].d.y + 64 - s.body.height,
+                'right'
+            );
+        } else {
+            s.setPosition(
+                r.d[doorIndex].d.x - 8 - s.body.width,
+                r.d[doorIndex].d.y + 64 - s.body.height,
+                'left'
+            );
+        }
+    }
     return r;
 };
 
@@ -92,7 +113,18 @@ Room.prototype.addDoors = function () {
     return r;
 };
 
-Room.prototype.create = function () {
+Room.prototype.bringDoorsToTop = function () {
+    var r       = this,
+        door;
+    for (door in r.d) {
+        if (r.d.hasOwnProperty(door)) {
+            r.d[door].sprite.bringToTop();
+        }
+    }
+    return r;
+};
+
+Room.prototype.create = function (door) {
     var r       = this;
     r.tilemap   = r.g.add.tilemap(r.name);
     r.t         = r.tilemap;
@@ -100,13 +132,17 @@ Room.prototype.create = function () {
     r.l         = r.layers;
     r.doors     = {};
     r.d         = r.doors;
+    if (typeof door == 'undefined') {
+        door = 0;
+    }
     r.addTilesetImages()
+     .addDoors()
      .addBackgroundLayer()
      .addCollisionLayer()
      .addDecoLayer(2)
-     .addPlayerLayer(0)
+     .addPlayerLayer(door)
      .addDecoLayer(1)
-     .addDoors();
+     .bringDoorsToTop();
     return r;
 };
 
@@ -136,9 +172,10 @@ Room.prototype.checkDoorCollision = function () {
                 g.s.body,
                 r.d[door].body
             )) {
-                r.g.m.r.destroy();
-                r.g.m.r = r.g.m.rooms.srx1;
-                r.g.m.create();
+                r.g.m.useDoorTo(
+                    r.d[door].to.room,
+                    r.d[door].to.door
+                )
             }
         }
     }

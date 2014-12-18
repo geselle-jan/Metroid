@@ -85,7 +85,17 @@
 </data>
  </layer>
  <objectgroup name="doors">
-  <object name="1" type="door" x="-40" y="208" width="64" height="64"/>
-  <object name="2" type="door" x="456" y="208" width="64" height="64"/>
+  <object name="1" type="door" x="-40" y="208" width="64" height="64">
+   <properties>
+    <property name="door" value="1"/>
+    <property name="room" value="sector01_room01"/>
+   </properties>
+  </object>
+  <object name="2" type="door" x="456" y="208" width="64" height="64">
+   <properties>
+    <property name="door" value="1"/>
+    <property name="room" value="srx2"/>
+   </properties>
+  </object>
  </objectgroup>
 </map>
