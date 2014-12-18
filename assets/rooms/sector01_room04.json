@@ -58,8 +58,8 @@
                  "name":"1",
                  "properties":
                     {
-                     "door":"1",
-                     "room":"sector01_room01"
+                     "door":"2",
+                     "room":"sector01_room03"
                     },
                  "rotation":0,
                  "type":"door",

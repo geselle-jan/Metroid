@@ -10,17 +10,22 @@ var Map = function (game) {
 Map.prototype.data = {
     rooms: [
         'sector01_room01',
-        'srx1',
+        'sector01_room02',
+        'sector01_room03',
+        'sector01_room04',
         'srx2',
         'srx3'
     ],
     tilesets: [
         'collision',
         'yellow',
+        'corridor1',
         'srx'
     ],
     backgrounds: [
         'brown',
+        'browntank',
+        'pipecorridor',
         'sr388cave'
     ],
     sprites: [

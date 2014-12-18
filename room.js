@@ -148,18 +148,20 @@ Room.prototype.create = function (door) {
 
 Room.prototype.setBackgroundPosition = function () {
     var r       = this;
-    r.l.bg.tilePosition.x =
-            Math.round(
-                game.camera.position.x / 2
-              - game.camera.width / 4
-            )
-          + r.t.images[0].x;
-    r.l.bg.tilePosition.y =
-            Math.round(
-                game.camera.position.y / 2
-              - game.camera.height / 4
-            )
-          + r.t.images[0].y;
+    if (!r.t.images[0].properties.fixed) {
+        r.l.bg.tilePosition.x =
+                Math.round(
+                    game.camera.position.x / 2
+                  - game.camera.width / 4
+                )
+              + r.t.images[0].x;
+        r.l.bg.tilePosition.y =
+                Math.round(
+                    game.camera.position.y / 2
+                  - game.camera.height / 4
+                )
+              + r.t.images[0].y;
+    }
     return r;
 };
 
