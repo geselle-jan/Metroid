@@ -30,7 +30,7 @@ Map.prototype.data = {
     animatedBackgrounds: {
         browntank: {
             frames: [0,1,2,3],
-            fps: 2,
+            fps: 4,
             width: 512,
             height: 256
         }
