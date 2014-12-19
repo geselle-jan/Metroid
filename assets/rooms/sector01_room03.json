@@ -1,18 +1,17 @@
 { "height":10,
  "layers":[
         {
-         "height":10,
+         "height":0,
          "image":"..\/backgrounds\/pipecorridor.png",
          "name":"bg",
          "opacity":1,
          "properties":
             {
-             "fixed":"true",
              "key":"pipecorridor"
             },
          "type":"imagelayer",
          "visible":true,
-         "width":45,
+         "width":0,
          "x":0,
          "y":0
         }, 
@@ -51,7 +50,7 @@
         }, 
         {
          "draworder":"topdown",
-         "height":10,
+         "height":0,
          "name":"doors",
          "objects":[
                 {
@@ -87,7 +86,7 @@
          "opacity":1,
          "type":"objectgroup",
          "visible":true,
-         "width":45,
+         "width":0,
          "x":0,
          "y":0
         }],

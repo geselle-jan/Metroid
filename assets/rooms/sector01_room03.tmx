@@ -9,7 +9,6 @@
  <imagelayer name="bg">
   <image source="../backgrounds/pipecorridor.png"/>
   <properties>
-   <property name="fixed" value="true"/>
    <property name="key" value="pipecorridor"/>
   </properties>
  </imagelayer>

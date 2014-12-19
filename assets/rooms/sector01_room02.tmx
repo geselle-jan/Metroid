@@ -10,7 +10,7 @@
   <image source="../tilesets/yellow.png" width="256" height="384"/>
  </tileset>
  <imagelayer name="bg">
-  <image source="../backgrounds/browntank.png"/>
+  <image source="../animatedBackgrounds/browntank.png"/>
   <properties>
    <property name="key" value="browntank"/>
   </properties>

@@ -24,10 +24,17 @@ Map.prototype.data = {
     ],
     backgrounds: [
         'brown',
-        'browntank',
         'pipecorridor',
         'sr388cave'
     ],
+    animatedBackgrounds: {
+        browntank: {
+            frames: [0,1,2,3],
+            fps: 2,
+            width: 512,
+            height: 256
+        }
+    },
     sprites: [
         'door',
     ]
@@ -55,12 +62,26 @@ Map.prototype.eachRoom = function (action) {
 };
 
 Map.prototype.loadAssets = function (type) {
-    var m = this;
-    for (var i = m.d[type].length - 1; i >= 0; i--) {
-        m.g.load.image(
-            m.d[type][i],
-            'assets/' + type + '/' + m.d[type][i] +'.png'
-        );
+    var m = this,
+        asset;
+    if (type == 'animatedBackgrounds') {
+        for (asset in m.d[type]) {
+            if (m.d[type].hasOwnProperty(asset)) {
+                m.g.load.spritesheet(
+                    asset,
+                    'assets/' + type + '/' + asset +'.png',
+                    m.d[type][asset].width,
+                    m.d[type][asset].height
+                );
+            }
+        }
+    } else {
+        for (var i = m.d[type].length - 1; i >= 0; i--) {
+            m.g.load.image(
+                m.d[type][i],
+                'assets/' + type + '/' + m.d[type][i] +'.png'
+            );
+        }
     }
     return m;
 };
@@ -70,6 +91,7 @@ Map.prototype.preload = function () {
     m.eachRoom('preload')
      .loadAssets('tilesets')
      .loadAssets('backgrounds')
+     .loadAssets('animatedBackgrounds')
      .loadAssets('sprites');
     return m;
 };

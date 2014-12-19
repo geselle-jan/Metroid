@@ -15,15 +15,58 @@ Room.prototype.preload = function () {
     return r;
 };
 
-Room.prototype.addBackgroundLayer = function () {
-    var r       = this;
-    r.l.bg      = r.g.add.tileSprite(
+Room.prototype.addStaticBackgroundLayer = function () {
+    var r   = this;
+    r.l.bg  = r.g.add.tileSprite(
         0,
         0,
         r.t.widthInPixels,
         r.t.heightInPixels,
         r.t.images[0].properties.key
     );
+    return r;
+};
+
+Room.prototype.addAnimatedBackgroundLayer = function () {
+    var r   = this,
+        key = r.t.images[0].properties.key;
+    r.l.bg  = r.g.add.sprite(0, 0, key);
+    r.addBackgroundAnimation();
+    r.l.bg.animations.play('bgLoop');
+    return r;
+};
+
+Room.prototype.addBackgroundAnimation = function () {
+    var r   = this,
+        key = r.t.images[0].properties.key,
+        obj = r.g.m.d['animatedBackgrounds'][key];
+    r.l.bg.animations.add(
+        'bgLoop',
+        obj.frames,
+        obj.fps,
+        true
+    );
+    return r;
+};
+
+Room.prototype.addBackgroundLayer = function () {
+    var r   = this,
+        key = r.t.images[0].properties.key,
+        asset,
+        animated = false;
+    for (asset in r.g.m.d['animatedBackgrounds']) {
+        if (r.g.m.d['animatedBackgrounds'].hasOwnProperty(asset)) {
+            if (asset == key) {
+                animated = true;
+            }
+        }
+    }
+    if (animated) {
+        r.addAnimatedBackgroundLayer();
+    } else {
+        r.addStaticBackgroundLayer();
+    }
+    r.l.bg.animated = animated;
     return r;
 };
 
@@ -147,20 +190,29 @@ Room.prototype.create = function (door) {
 };
 
 Room.prototype.setBackgroundPosition = function () {
-    var r       = this;
+    var r       = this,
+        x,
+        y;
     if (!r.t.images[0].properties.fixed) {
-        r.l.bg.tilePosition.x =
-                Math.round(
-                    game.camera.position.x / 2
-                  - game.camera.width / 4
-                )
-              + r.t.images[0].x;
-        r.l.bg.tilePosition.y =
-                Math.round(
-                    game.camera.position.y / 2
-                  - game.camera.height / 4
-                )
-              + r.t.images[0].y;
+        x =
+            Math.round(
+                game.camera.position.x / 2
+              - game.camera.width / 4
+            )
+          + r.t.images[0].x;
+        y =
+            Math.round(
+                game.camera.position.y / 2
+              - game.camera.height / 4
+            )
+          + r.t.images[0].y;
+        if (r.l.bg.animated) {
+            r.l.bg.position.x = x;
+            r.l.bg.position.y = y;
+        } else {
+            r.l.bg.tilePosition.x = x;
+            r.l.bg.tilePosition.y = y;
+        }
     }
     return r;
 };
