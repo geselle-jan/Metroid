@@ -173,7 +173,7 @@
             tile.worldX - tile.width,       // cx
             tile.worldY + (tile.height * 2) // cy
         );
-        if (collides && body.position.x >= tile.worldX) {
+        if ((body.sticky || collides) && body.position.x >= tile.worldX) {
             body.y = tile.worldY - body.height + (body.position.x - tile.worldX);
             if (body.y < tile.worldY - body.height) {
                 body.y = tile.worldY - body.height;
@@ -209,7 +209,7 @@
             tile.worldX - tile.width,       // cx
             tile.worldY + (tile.height * 2) // cy
         );
-        if (collides && body.position.x + body.width <= tile.worldX + tile.width) {
+        if ((body.sticky || collides) && body.position.x + body.width <= tile.worldX + tile.width) {
             body.y = tile.worldY - body.height + (((body.position.x + body.width) - tile.worldX) * -1 + tile.height);
             if (body.y < tile.worldY - body.height ) {
                 body.y = tile.worldY - body.height;
@@ -246,7 +246,7 @@
             tile.worldY + (tile.height * 2) // cy
         );
 
-        if (collides && body.position.x + body.width <= tile.worldX + tile.width) {
+        if ((body.sticky || collides) && body.position.x + body.width <= tile.worldX + tile.width) {
             body.y = tile.worldY - body.height + (((body.position.x + body.width) - tile.worldX) * -0.5 + tile.height);
             if (body.y < tile.worldY - body.height ) {
                 body.y = tile.worldY - body.height;
@@ -286,7 +286,7 @@
             tile.worldY + (tile.height * 2) // cy
         );
 
-        if (collides && body.position.x + body.width <= tile.worldX + tile.width) {
+        if ((body.sticky || collides) && body.position.x + body.width <= tile.worldX + tile.width) {
             body.y = tile.worldY - body.height + (((body.position.x + body.width) - tile.worldX) * -0.5 + tile.height * 0.5);
             if (body.y < tile.worldY - body.height ) {
                 body.y = tile.worldY - body.height;
@@ -323,7 +323,7 @@
             tile.worldX - (tile.width * 3), // cx
             tile.worldY + (tile.height * 2) // cy
         );
-        if (collides && body.position.x >= tile.worldX) {
+        if ((body.sticky || collides) && body.position.x >= tile.worldX) {
             body.y = tile.worldY - body.height + (body.position.x - tile.worldX) * 0.5 + tile.height * 0.5;
             if (body.y < tile.worldY - body.height) {
                 body.y = tile.worldY - body.height;
@@ -362,7 +362,7 @@
             tile.worldX - (tile.width * 4), // cx
             tile.worldY + (tile.height * 2) // cy
         );
-        if (collides && body.position.x >= tile.worldX) {
+        if ((body.sticky || collides) && body.position.x >= tile.worldX) {
             body.y = tile.worldY - body.height + (body.position.x - tile.worldX) * 0.5;
             if (body.y < tile.worldY - body.height) {
                 body.y = tile.worldY - body.height;

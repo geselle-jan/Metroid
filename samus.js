@@ -178,6 +178,7 @@ Samus.prototype.create = function () {
     s.body.bounce.y             = 0;
     s.body.gravity.y            = 1500;
     s.body.collideWorldBounds   = true; 
+    s.body.sticky               = true;
     s.body.setSize(16, 32, 17, 14);
     s.g.camera.follow(s.sprite);
     s.addAnimations()
@@ -398,6 +399,7 @@ Samus.prototype.jump = function () {
     } else {
         s.set('vJump', true);
     }
+    s.body.sticky = false;
     return s;
 };
 
@@ -421,6 +423,7 @@ Samus.prototype.landing = function () {
         s.set('hJump', false);
     }
     s.set('vJump', false);
+    s.body.sticky = true;
     return s;
 };
 
@@ -486,7 +489,7 @@ Samus.prototype.grabEdge = function () {
 Samus.prototype.powerGrip = function () {
     var s = this;
     if (s.b.down.isDown && s.is('gripFall')) {
-        s.body.gravity.y = 1000;
+        s.body.gravity.y = 1500;
         s.set('powerGrip', false);
         s.set('gripFall', false);
         s.set('gripClimb', false);
@@ -498,7 +501,7 @@ Samus.prototype.powerGrip = function () {
         }
         s.setSpriteOffset(0,0);
     } else if (s.b.up.isDown && s.is('gripClimb')) {
-        s.body.gravity.y = 1000;
+        s.body.gravity.y = 1500;
         s.set('powerGrip', false);
         s.set('gripFall', false);
         s.set('gripClimb', false);
