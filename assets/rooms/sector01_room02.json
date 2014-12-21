@@ -2,7 +2,7 @@
  "layers":[
         {
          "height":0,
-         "image":"..\/backgrounds\/browntank.png",
+         "image":"..\/animatedBackgrounds\/browntank.png",
          "name":"bg",
          "opacity":1,
          "properties":
@@ -81,6 +81,21 @@
                  "visible":true,
                  "width":64,
                  "x":456,
+                 "y":208
+                }, 
+                {
+                 "height":64,
+                 "name":"3",
+                 "properties":
+                    {
+                     "door":"1",
+                     "room":"debug"
+                    },
+                 "rotation":0,
+                 "type":"door",
+                 "visible":true,
+                 "width":64,
+                 "x":-40,
                  "y":208
                 }],
          "opacity":1,

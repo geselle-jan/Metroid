@@ -14,15 +14,18 @@ Map.prototype.data = {
         'sector01_room03',
         'sector01_room04',
         'srx2',
-        'srx3'
+        'srx3',
+        'debug'
     ],
     tilesets: [
         'collision',
+        'debug',
         'yellow',
         'corridor1',
         'srx'
     ],
     backgrounds: [
+        'debug_bg',
         'brown',
         'pipecorridor',
         'sr388cave'

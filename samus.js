@@ -486,47 +486,59 @@ Samus.prototype.grabEdge = function () {
     return s;
 };
 
-Samus.prototype.powerGrip = function () {
-    var s = this;
-    if (s.b.down.isDown && s.is('gripFall')) {
-        s.body.gravity.y = 1500;
-        s.set('powerGrip', false);
-        s.set('gripFall', false);
-        s.set('gripClimb', false);
-        s.sprite.animations.stop();
-        if (s.is('left')) {
+Samus.prototype.gripFall = function () {
+    var s   = this;
+    s.body.gravity.y = 1500;
+    s.set('powerGrip', false);
+    s.set('gripFall', false);
+    s.set('gripClimb', false);
+    s.sprite.animations.stop();
+    if (s.is('left')) {
+        s.sprite.animations.play('standLeft');
+    } else {
+        s.sprite.animations.play('standRight');
+    }
+    s.setSpriteOffset(0,0);
+    return s;
+};
+
+Samus.prototype.gripClimb = function () {
+    var s   = this;
+    s.body.gravity.y = 1500;
+    s.set('powerGrip', false);
+    s.set('gripFall', false);
+    s.set('gripClimb', false);
+    s.set('jumpPossible', false);
+    s.body.position.y = s.body.position.y - s.body.height;
+    if (s.is('left')) {
+        s.body.position.x -= s.g.m.r.t.tileWidth;
+    } else {
+        s.body.position.x += s.g.m.r.t.tileWidth;
+    }
+    s.sprite.animations.stop();
+    if (s.is('left')) {
+        if (s.b.left.isDown) {
+            s.sprite.animations.play('walkLeft');
+        } else {
             s.sprite.animations.play('standLeft');
+        }
+    } else {
+        if (s.b.right.isDown) {
+            s.sprite.animations.play('walkRight');
         } else {
             s.sprite.animations.play('standRight');
         }
-        s.setSpriteOffset(0,0);
+    }
+    s.setSpriteOffset(0,0);
+    return s;
+};
+
+Samus.prototype.powerGrip = function () {
+    var s = this;
+    if (s.b.down.isDown && s.is('gripFall')) {
+        s.gripFall();
     } else if (s.b.up.isDown && s.is('gripClimb')) {
-        s.body.gravity.y = 1500;
-        s.set('powerGrip', false);
-        s.set('gripFall', false);
-        s.set('gripClimb', false);
-        s.set('jumpPossible', false);
-        s.body.position.y = s.body.position.y - s.body.height;
-        if (s.is('left')) {
-            s.body.position.x -= s.g.m.r.t.tileWidth;
-        } else {
-            s.body.position.x += s.g.m.r.t.tileWidth;
-        }
-        s.sprite.animations.stop();
-        if (s.is('left')) {
-            if (s.b.left.isDown) {
-                s.sprite.animations.play('walkLeft');
-            } else {
-                s.sprite.animations.play('standLeft');
-            }
-        } else {
-            if (s.b.right.isDown) {
-                s.sprite.animations.play('walkRight');
-            } else {
-                s.sprite.animations.play('standRight');
-            }
-        }
-        s.setSpriteOffset(0,0);
+        s.gripClimb();
     } else if (s.b.up.isUp && s.isnt('gripClimb')) {
         s.set('gripClimb', true);
     } else if (s.b.down.isUp && s.isnt('gripFall')) {
