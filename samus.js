@@ -2,6 +2,10 @@ var Samus = function (game) {
     var s           = this,
         now         = new Date();   
     s.g             = game;
+    s.animPoint     = {
+        x: 0,
+        y: 0
+    };
     s.b             = {
         up:     {},
         down:   {},
@@ -15,6 +19,10 @@ var Samus = function (game) {
         select: {}
     };
     s.state         = {
+        debug: {
+            is: false,
+            since: now
+        },
         left: {
             is: false,
             since: now
@@ -44,6 +52,10 @@ var Samus = function (game) {
             since: now
         },
         gripClimb: {
+            is: false,
+            since: now
+        },
+        gripClimbing: {
             is: false,
             since: now
         },
@@ -112,6 +124,18 @@ var Samus = function (game) {
             fps:    3,
             loop:   true,
             frames: [332, 333, 334, 333]
+        },
+        {
+            name:   'gripClimbLeft',
+            fps:    15,
+            loop:   false,
+            frames: [328, 339, 338, 337, 336, 347, 346]
+        },
+        {
+            name:   'gripClimbRight',
+            fps:    15,
+            loop:   false,
+            frames: [335, 340, 341, 342, 343, 348, 349]
         }
     ];
 };
@@ -503,43 +527,115 @@ Samus.prototype.gripFall = function () {
 };
 
 Samus.prototype.gripClimb = function () {
-    var s   = this;
-    s.body.gravity.y = 1500;
-    s.set('powerGrip', false);
-    s.set('gripFall', false);
-    s.set('gripClimb', false);
-    s.set('jumpPossible', false);
-    s.body.position.y = s.body.position.y - s.body.height;
-    if (s.is('left')) {
-        s.body.position.x -= s.g.m.r.t.tileWidth;
-    } else {
-        s.body.position.x += s.g.m.r.t.tileWidth;
+    var s           = this,
+        duration    = 300,
+        now         = new Date(),
+        difference  = s.state.gripClimbing.is ? now - s.state.gripClimbing.since : 0,
+        tempX,
+        tempY,
+        factor,
+        factorX,
+        factorY;
+    if (s.isnt('gripClimbing')) {
+        s.set('jumpPossible', false);
+        s.set('gripClimbing', true);
+        s.animPoint.x = s.body.position.x;
+        s.animPoint.y = s.body.position.y;
     }
-    s.sprite.animations.stop();
+    tempY               = s.body.height / (duration / 2) * difference;
+    tempY               = tempY > s.body.height ? s.body.height : tempY;
+    s.body.position.y   = s.animPoint.y - tempY;
+    factorY             = tempY / s.body.height;
+    tempX               = difference > (duration / 2)
+                          ? (s.g.m.r.t.tileWidth / (duration / 2) * difference) - s.g.m.r.t.tileWidth
+                          : 0;
+    factorX             = tempX / s.g.m.r.t.tileWidth;
+    factor              = difference / duration;
     if (s.is('left')) {
-        if (s.b.left.isDown) {
-            s.sprite.animations.play('walkLeft');
-        } else {
-            s.sprite.animations.play('standLeft');
+        if (!s.isAnim('gripClimbLeft')) {
+            s.sprite.animations.stop();
+            s.sprite.animations.play('gripClimbLeft');
         }
+        s.body.position.x = s.animPoint.x - tempX;
+        s.setSpriteOffset(
+            (1 - factorX) * -2,
+            (1 - factor) * 7
+        );
     } else {
-        if (s.b.right.isDown) {
-            s.sprite.animations.play('walkRight');
-        } else {
-            s.sprite.animations.play('standRight');
+        if (!s.isAnim('gripClimbRight')) {
+            s.sprite.animations.stop();
+            s.sprite.animations.play('gripClimbRight');
         }
+        s.body.position.x = s.animPoint.x + tempX;
+        s.setSpriteOffset(
+            (1 - factorX) * 2,
+            (1 - factor) * 7
+        );
     }
-    s.setSpriteOffset(0,0);
+    if (difference > duration) {
+        s.set('gripClimbing',   false);
+        s.set('powerGrip',      false);
+        s.set('gripClimb',      false);
+        s.set('gripFall',       false);
+        s.set('turning',        false);
+        s.body.gravity.y        = 1500;
+        s.body.position.y       = s.animPoint.y - s.body.height;
+        if (s.is('left')) {
+            s.body.position.x   = s.animPoint.x - s.g.m.r.t.tileWidth;
+        } else {
+            s.body.position.x   = s.animPoint.x + s.g.m.r.t.tileWidth;
+        }
+        s.sprite.animations.stop();
+        if (s.is('left')) {
+            if (s.b.left.isDown) {
+                s.sprite.animations.play('walkLeft');
+            } else {
+                s.sprite.animations.play('standLeft');
+            }
+        } else {
+            if (s.b.right.isDown) {
+                s.sprite.animations.play('walkRight');
+            } else {
+                s.sprite.animations.play('standRight');
+            }
+        }
+        s.setSpriteOffset(0,0);
+    }
     return s;
 };
 
 Samus.prototype.powerGrip = function () {
-    var s = this;
+    var s = this,
+        climbUp = (
+                s.is('gripClimb')
+                &&
+                (
+                    s.b.up.isDown
+                    ||
+                    (
+                        s.b.a.isDown
+                        &&
+                        s.b.left.isDown
+                        &&
+                        s.is('left')
+                    )
+                    ||
+                    (
+                        s.b.a.isDown
+                        &&
+                        s.b.right.isDown
+                        &&
+                        s.is('right')
+                    )
+                )
+            )
+            ||
+            s.is('gripClimbing');
     if (s.b.down.isDown && s.is('gripFall')) {
         s.gripFall();
-    } else if (s.b.up.isDown && s.is('gripClimb')) {
+    } else if (climbUp) {
         s.gripClimb();
-    } else if (s.b.up.isUp && s.isnt('gripClimb')) {
+    } else if (s.b.up.isUp && s.b.a.isUp && s.isnt('gripClimb')) {
         s.set('gripClimb', true);
     } else if (s.b.down.isUp && s.isnt('gripFall')) {
         s.set('gripFall', true);
@@ -589,6 +685,14 @@ Samus.prototype.updateMovement = function () {
     }
     if (s.is('powerGrip')) {
         s.powerGrip();
+    }
+    return s;
+};
+
+Samus.prototype.render = function () {
+    var s   = this;
+    if (s.is('debug')) {
+        s.g.debug.body(s.sprite);
     }
     return s;
 };
