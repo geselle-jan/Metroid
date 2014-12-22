@@ -94,7 +94,7 @@
   <object name="2" type="door" x="456" y="208" width="64" height="64">
    <properties>
     <property name="door" value="1"/>
-    <property name="room" value="srx2"/>
+    <property name="room" value="sector01_room05"/>
    </properties>
   </object>
  </objectgroup>

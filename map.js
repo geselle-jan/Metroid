@@ -13,8 +13,10 @@ Map.prototype.data = {
         'sector01_room02',
         'sector01_room03',
         'sector01_room04',
-        'srx2',
-        'srx3',
+        'sector01_room05',
+        'sector01_room06',
+        'sector01_room07',
+        'sector01_room08',
         'debug'
     ],
     tilesets: [
@@ -28,7 +30,8 @@ Map.prototype.data = {
         'debug_bg',
         'brown',
         'pipecorridor',
-        'sr388cave'
+        'sr388cave',
+        'greenpassage'
     ],
     animatedBackgrounds: {
         browntank: {

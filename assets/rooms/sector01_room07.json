@@ -1,7 +1,7 @@
 { "height":20,
  "layers":[
         {
-         "height":20,
+         "height":0,
          "image":"..\/backgrounds\/sr388cave.png",
          "name":"bg",
          "opacity":1,
@@ -11,7 +11,7 @@
             },
          "type":"imagelayer",
          "visible":true,
-         "width":30,
+         "width":0,
          "x":0,
          "y":64
         }, 
@@ -50,7 +50,7 @@
         }, 
         {
          "draworder":"topdown",
-         "height":20,
+         "height":0,
          "name":"doors",
          "objects":[
                 {
@@ -59,7 +59,7 @@
                  "properties":
                     {
                      "door":"2",
-                     "room":"srx2"
+                     "room":"sector01_room06"
                     },
                  "rotation":0,
                  "type":"door",
@@ -71,7 +71,7 @@
          "opacity":1,
          "type":"objectgroup",
          "visible":true,
-         "width":30,
+         "width":0,
          "x":0,
          "y":0
         }],

@@ -59,7 +59,7 @@
                  "properties":
                     {
                      "door":"2",
-                     "room":"sector01_room04"
+                     "room":"sector01_room08"
                     },
                  "rotation":0,
                  "type":"door",
@@ -73,8 +73,8 @@
                  "name":"2",
                  "properties":
                     {
-                     "door":"1",
-                     "room":"srx3"
+                     "door":"3",
+                     "room":"sector01_room06"
                     },
                  "rotation":0,
                  "type":"door",

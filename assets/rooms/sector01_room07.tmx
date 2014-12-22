@@ -88,7 +88,7 @@
   <object name="1" type="door" x="-40" y="208" width="64" height="64">
    <properties>
     <property name="door" value="2"/>
-    <property name="room" value="srx2"/>
+    <property name="room" value="sector01_room06"/>
    </properties>
   </object>
  </objectgroup>

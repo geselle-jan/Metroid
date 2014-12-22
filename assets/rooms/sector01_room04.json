@@ -74,7 +74,7 @@
                  "properties":
                     {
                      "door":"1",
-                     "room":"srx2"
+                     "room":"sector01_room05"
                     },
                  "rotation":0,
                  "type":"door",
