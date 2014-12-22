@@ -136,6 +136,18 @@ var Samus = function (game) {
             fps:    15,
             loop:   false,
             frames: [335, 340, 341, 342, 343, 348, 349]
+        },
+        {
+            name:   'grabEdgeLeft',
+            fps:    15,
+            loop:   false,
+            frames: [328]
+        },
+        {
+            name:   'grabEdgeRight',
+            fps:    15,
+            loop:   false,
+            frames: [335]
         }
     ];
 };
@@ -494,12 +506,12 @@ Samus.prototype.grabEdge = function () {
                     s.sprite.animations.stop();
                     if (s.is('left')) {
                         s.body.position.x = tile.worldX + tile.width;
-                        s.sprite.animations.play('powerGripLeft');
-                        s.setSpriteOffset(-2,7);
+                        s.sprite.animations.play('grabEdgeLeft');
+                        s.setSpriteOffset(-1,6);
                     } else {
                         s.body.position.x = tile.worldX - s.body.width;
-                        s.sprite.animations.play('powerGripRight');
-                        s.setSpriteOffset(2,7);
+                        s.sprite.animations.play('grabEdgeRight');
+                        s.setSpriteOffset(1,6);
                     }
                     s.body.gravity.y = 0;
                     s.set('powerGrip', true);
@@ -631,6 +643,17 @@ Samus.prototype.powerGrip = function () {
             )
             ||
             s.is('gripClimbing');
+    if (s.isAnim('grabEdgeLeft') && s.isAnimFinished()) {
+        s.sprite.animations.stop();
+        s.sprite.animations.play('powerGripLeft');
+        s.setSpriteOffset(-2,7);
+
+    }
+    if (s.isAnim('grabEdgeRight') && s.isAnimFinished()) {
+        s.sprite.animations.stop();
+        s.sprite.animations.play('powerGripRight');
+        s.setSpriteOffset(2,7);
+    }
     if (s.b.down.isDown && s.is('gripFall')) {
         s.gripFall();
     } else if (climbUp) {
