@@ -23,6 +23,10 @@ var Samus = function (game) {
             is: false,
             since: now
         },
+        onGround: {
+            is: false,
+            since: now
+        },
         left: {
             is: false,
             since: now
@@ -148,6 +152,42 @@ var Samus = function (game) {
             fps:    15,
             loop:   false,
             frames: [335]
+        },
+        {
+            name:   'vJumpLeft',
+            fps:    15,
+            loop:   false,
+            frames: [187, 186, 185]
+        },
+        {
+            name:   'vJumpRight',
+            fps:    15,
+            loop:   false,
+            frames: [188, 189, 190]
+        },
+        {
+            name:   'fallLeft',
+            fps:    3,
+            loop:   false,
+            frames: [184, 195, 194]
+        },
+        {
+            name:   'fallRight',
+            fps:    3,
+            loop:   false,
+            frames: [191, 196, 197]
+        },
+        {
+            name:   'landLeft',
+            fps:    3,
+            loop:   false,
+            frames: [193, 192]
+        },
+        {
+            name:   'landRight',
+            fps:    3,
+            loop:   false,
+            frames: [198, 199]
         }
     ];
 };
@@ -279,9 +319,19 @@ Samus.prototype.update = function () {
     return s;
 };
 
+Samus.prototype.isntGravFree = function () {
+    var s   = this;
+    return s.isnt('hJump') && s.isnt('powerGrip') && s.isnt('gripFall') && s.isnt('gripClimbing');
+};
+
 Samus.prototype.isOnGround = function () {
     var s   = this;
-    return s.isnt('hJump') && s.isnt('powerGrip') && s.isnt('gripFall');
+    return !(s.isnt('onGround', 2) || (!s.body.onFloor() && s.body.velocity.y < 0));
+};
+
+Samus.prototype.isntOnGround = function () {
+    var s   = this;
+    return s.isnt('onGround', 2);
 };
 
 Samus.prototype.setSpriteOffset = function (x, y) {
@@ -346,7 +396,6 @@ Samus.prototype.standRight = function () {
         s.set('turning', false);
         s.sprite.animations.stop();
         s.sprite.animations.play('standRight');
-
     }
     return s;
 };
@@ -433,6 +482,15 @@ Samus.prototype.jump = function () {
             s.sprite.animations.play('hJumpRight');
         }
     } else {
+
+        if (s.is('left') && !s.isAnim('vJumpLeft')) {
+            s.sprite.animations.stop();
+            s.sprite.animations.play('vJumpLeft');
+        } else if (s.is('right') && !s.isAnim('vJumpRight')) {
+            s.sprite.animations.stop();
+            s.sprite.animations.play('vJumpRight');
+        }
+
         s.set('vJump', true);
     }
     s.body.sticky = false;
@@ -668,19 +726,24 @@ Samus.prototype.powerGrip = function () {
 
 Samus.prototype.updateMovement = function () {
     var s   = this;
-    if (s.body.onFloor() && (s.is('vJump') || s.is('hJump'))) {
+    if (s.body.onFloor() && s.isnt('onGround')) {
+        s.set('onGround', true);
+    } else if (!s.body.onFloor() && s.is('onGround')) {
+        s.set('onGround', false);
+    }
+    if (s.isOnGround() && (s.is('vJump') || s.is('hJump'))) {
         s.landing();
     }
-    if (s.isOnGround()) {
-        if (s.b.a.isDown && s.sprite.body.onFloor() && s.is('jumpPossible')) {
+    if (s.isntGravFree()) {
+        if (s.b.a.isDown && s.isOnGround() && s.is('jumpPossible')) {
             s.jump();
-        } else if (s.isExclusiveDirection()) {
+        } else if (s.isExclusiveDirection() && s.isOnGround()) {
             if (s.b.left.isDown) {
                 s.walkLeft();
             } else {
                 s.walkRight();
             }
-        } else {
+        } else if (s.isOnGround()) {
             if (s.is('left')) {
                 s.standLeft();
             } else {
@@ -688,10 +751,10 @@ Samus.prototype.updateMovement = function () {
             }
         }
     }
-    if (s.b.a.isUp && s.body.onFloor()) {
+    if (s.b.a.isUp && s.isOnGround()) {
         s.set('jumpPossible', true);
     }
-    if (s.b.a.isUp && !s.sprite.body.onFloor() && s.isnt('jumpPossible')) {
+    if (s.b.a.isUp && s.isntOnGround() && s.isnt('jumpPossible')) {
         if (s.body.velocity.y < -50) {
             s.body.velocity.y = -50;            
         }
