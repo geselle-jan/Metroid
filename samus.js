@@ -499,6 +499,7 @@ Samus.prototype.airStandLeft = function () {
     }
     if (s.isnt('falling')) {
         s.set('falling', true);
+        s.set('jumpPossible', false);
         s.body.gravity.y = 600;
         s.body.velocity.x = -30;
     } else {
@@ -528,6 +529,7 @@ Samus.prototype.airStandRight = function () {
     }
     if (s.isnt('falling')) {
         s.set('falling', true);
+    s.set('jumpPossible', false);
         s.body.gravity.y = 600;
         s.body.velocity.x = 30;
     } else {
@@ -775,6 +777,7 @@ Samus.prototype.grabEdge = function () {
 Samus.prototype.gripFall = function () {
     var s   = this;
     s.set('falling', true);
+    s.set('jumpPossible', false);
     s.body.gravity.y = 600;
     s.set('powerGrip', false);
     s.set('gripFall', false);
