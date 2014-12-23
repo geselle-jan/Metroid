@@ -27,6 +27,10 @@ var Samus = function (game) {
             is: false,
             since: now
         },
+        falling: {
+            is: false,
+            since: now
+        },
         left: {
             is: false,
             since: now
@@ -167,27 +171,39 @@ var Samus = function (game) {
         },
         {
             name:   'fallLeft',
-            fps:    3,
+            fps:    15,
             loop:   false,
             frames: [184, 195, 194]
         },
         {
             name:   'fallRight',
-            fps:    3,
+            fps:    15,
             loop:   false,
             frames: [191, 196, 197]
         },
         {
             name:   'landLeft',
-            fps:    3,
+            fps:    15,
             loop:   false,
             frames: [193, 192]
         },
         {
             name:   'landRight',
-            fps:    3,
+            fps:    15,
             loop:   false,
             frames: [198, 199]
+        },
+        {
+            name:   'airTurnLeft',
+            fps:    20,
+            loop:   false,
+            frames: [250, 249]
+        },
+        {
+            name:   'airTurnRight',
+            fps:    20,
+            loop:   false,
+            frames: [249, 250]
         }
     ];
 };
@@ -370,13 +386,18 @@ Samus.prototype.isExclusiveDirection = function () {
 Samus.prototype.standLeft = function () {
     var s   = this;
     s.body.velocity.x = 0;
-    if (s.isntAnim('standLeft') && s.isnt('turning'))
+    if (s.isntAnim('standLeft') && s.isntAnim('landLeft') && s.isnt('turning'))
     {
         s.sprite.animations.stop();
         s.sprite.animations.play('standLeft');
     }
     if (s.is('turning') && s.isAnimFinished()) {
         s.set('turning', false);
+        s.sprite.animations.stop();
+        s.sprite.animations.play('standLeft');
+
+    }
+    if (s.isAnim('landLeft') && s.isAnimFinished()) {
         s.sprite.animations.stop();
         s.sprite.animations.play('standLeft');
 
@@ -387,7 +408,7 @@ Samus.prototype.standLeft = function () {
 Samus.prototype.standRight = function () {
     var s   = this;
     s.body.velocity.x = 0;
-    if (s.isntAnim('standRight') && s.isnt('turning'))
+    if (s.isntAnim('standRight') && s.isntAnim('landRight') && s.isnt('turning'))
     {
         s.sprite.animations.stop();
         s.sprite.animations.play('standRight');
@@ -396,6 +417,11 @@ Samus.prototype.standRight = function () {
         s.set('turning', false);
         s.sprite.animations.stop();
         s.sprite.animations.play('standRight');
+    }
+    if (s.isAnim('landRight') && s.isAnimFinished()) {
+        s.sprite.animations.stop();
+        s.sprite.animations.play('standRight');
+
     }
     return s;
 };
@@ -458,9 +484,129 @@ Samus.prototype.walkRight = function () {
     return s;
 };
 
+Samus.prototype.airStandLeft = function () {
+    var s   = this;
+    if (s.body.velocity.y < 0 || s.isnt('falling')) {
+        if (s.isntAnim('vJumpLeft') && s.isnt('turning'))
+        {
+            s.sprite.animations.stop();
+            s.sprite.animations.play('vJumpLeft');
+        }
+    } else if (s.isnt('turning')) {
+        if (s.body.velocity.y >= 0 && s.isntAnim('fallLeft')) {
+            s.sprite.animations.play('fallLeft');
+        }
+    }
+    if (s.isnt('falling')) {
+        s.set('falling', true);
+        s.body.gravity.y = 600;
+        s.body.velocity.x = -30;
+    } else {
+        s.body.velocity.x = 0;
+    }
+    if (s.is('turning') && s.isAnimFinished()) {
+        s.set('turning', false);
+        s.sprite.animations.stop();
+        s.sprite.animations.play('vJumpLeft');
+
+    }
+    return s;
+};
+
+Samus.prototype.airStandRight = function () {
+    var s   = this;
+    if (s.body.velocity.y < 0 || s.isnt('falling')) {
+        if (s.isntAnim('vJumpRight') && s.isnt('turning'))
+        {
+            s.sprite.animations.stop();
+            s.sprite.animations.play('vJumpRight');
+        }
+    } else if (s.isnt('turning')) {
+        if (s.body.velocity.y >= 0 && s.isntAnim('fallRight')) {
+            s.sprite.animations.play('fallRight');
+        }
+    }
+    if (s.isnt('falling')) {
+        s.set('falling', true);
+        s.body.gravity.y = 600;
+        s.body.velocity.x = 30;
+    } else {
+        s.body.velocity.x = 0;
+    }
+    if (s.is('turning') && s.isAnimFinished()) {
+        s.set('turning', false);
+        s.sprite.animations.stop();
+        s.sprite.animations.play('vJumpRight');
+    }
+    return s;
+};
+
+Samus.prototype.airWalkLeft = function () {
+    var s   = this;
+    if (s.isnt('left')) {
+        s.set('left', true);
+        s.set('right', false);
+        s.set('turning', true);
+        s.sprite.animations.play('airTurnLeft');
+    }
+    if (s.is('turning') && s.isAnimFinished()) {
+        s.set('turning', false);
+        s.sprite.animations.stop();
+        s.sprite.animations.play('vJumpLeft');
+    }
+    if (s.isnt('turning')) {
+        if (s.body.velocity.x > 0) {
+            s.body.velocity.x = 0;
+        }
+        if (s.body.velocity.x > -95) {
+            s.body.velocity.x += -15;
+        }
+        if (s.body.velocity.x < -95) {
+            s.body.velocity.x = -95;
+        }
+        if (s.body.velocity.y < 0 && s.isntAnim('vJumpLeft')) {
+            s.sprite.animations.play('vJumpLeft');
+        } else if (s.body.velocity.y >= 0 && s.isntAnim('fallLeft')) {
+            s.sprite.animations.play('fallLeft');
+        }
+    }
+    return s;
+};
+
+Samus.prototype.airWalkRight = function () {
+    var s   = this;
+    if (s.isnt('right')) {
+        s.set('right', true);
+        s.set('left', false);
+        s.set('turning', true);
+        s.sprite.animations.play('airTurnRight');
+    }
+    if (s.is('turning') && s.isAnimFinished()) {
+        s.set('turning', false);
+        s.sprite.animations.stop();
+        s.sprite.animations.play('vJumpRight');
+    }
+    if (s.isnt('turning')) {
+        if (s.body.velocity.x < 0) {
+            s.body.velocity.x = 0;
+        }
+        if (s.body.velocity.x < 95) {
+            s.body.velocity.x += 15;
+        }
+        if (s.body.velocity.x > 95) {
+            s.body.velocity.x = 95;
+        }
+        if (s.body.velocity.y < 0 && s.isntAnim('vJumpRight')) {
+            s.sprite.animations.play('vJumpRight');
+        } else if (s.body.velocity.y >= 0 && s.isntAnim('fallRight')) {
+            s.sprite.animations.play('fallRight');
+        }
+    }
+    return s;
+};
+
 Samus.prototype.jump = function () {
     var s   = this;
-    s.body.velocity.y = -420;
     s.set('jumpPossible', false);
     if (s.isExclusiveDirection()) {
         s.set('hJump', true);
@@ -483,12 +629,13 @@ Samus.prototype.jump = function () {
         }
     } else {
 
-        if (s.is('left') && !s.isAnim('vJumpLeft')) {
-            s.sprite.animations.stop();
-            s.sprite.animations.play('vJumpLeft');
-        } else if (s.is('right') && !s.isAnim('vJumpRight')) {
-            s.sprite.animations.stop();
-            s.sprite.animations.play('vJumpRight');
+        s.body.gravity.y = 600;
+        s.body.velocity.y = -300;
+
+        if (s.is('left')) {
+            s.airStandLeft();
+        } else {
+            s.airStandRight();
         }
 
         s.set('vJump', true);
@@ -513,10 +660,19 @@ Samus.prototype.landing = function () {
                 s.sprite.animations.play('standRight');
             }
         }
-        s.body.gravity.y = 1500;
         s.set('hJump', false);
+    } else if (s.is('vJump') || s.is('falling')) {
+        s.set('vJump', false);
+        s.set('falling', false);
+        if (s.is('left')) {
+            s.sprite.animations.stop();
+            s.sprite.animations.play('landLeft');
+        } else {
+            s.sprite.animations.stop();
+            s.sprite.animations.play('landRight');
+        }
     }
-    s.set('vJump', false);
+    s.body.gravity.y = 1500;
     s.body.sticky = true;
     return s;
 };
@@ -582,7 +738,8 @@ Samus.prototype.grabEdge = function () {
 
 Samus.prototype.gripFall = function () {
     var s   = this;
-    s.body.gravity.y = 1500;
+    s.set('falling', true);
+    s.body.gravity.y = 600;
     s.set('powerGrip', false);
     s.set('gripFall', false);
     s.set('gripClimb', false);
@@ -731,7 +888,7 @@ Samus.prototype.updateMovement = function () {
     } else if (!s.body.onFloor() && s.is('onGround')) {
         s.set('onGround', false);
     }
-    if (s.isOnGround() && (s.is('vJump') || s.is('hJump'))) {
+    if (s.isOnGround() && (s.is('vJump') || s.is('hJump') || s.is('falling'))) {
         s.landing();
     }
     if (s.isntGravFree()) {
@@ -748,6 +905,12 @@ Samus.prototype.updateMovement = function () {
                 s.standLeft();
             } else {
                 s.standRight();
+            }
+        } else if (s.isntOnGround() && s.isnt('falling')) {
+            if (s.is('left')) {
+                s.airStandLeft();
+            } else {
+                s.airStandRight();
             }
         }
     }
@@ -771,6 +934,22 @@ Samus.prototype.updateMovement = function () {
     }
     if (s.is('powerGrip')) {
         s.powerGrip();
+    } else {
+        if (s.is('vJump') || s.is('falling')) {
+            if (s.isExclusiveDirection()) {
+                if (s.b.left.isDown) {
+                    s.airWalkLeft();
+                } else {
+                    s.airWalkRight();
+                }
+            } else {
+                if (s.is('left')) {
+                    s.airStandLeft();
+                } else {
+                    s.airStandRight();
+                }
+            }
+        }
     }
     return s;
 };
