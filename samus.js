@@ -986,6 +986,9 @@ Samus.prototype.updateMovement = function () {
             }
         }
     }
+    if (s.body.velocity.y > 400) {
+        s.body.velocity.y = 400;
+    }
     return s;
 };
 
