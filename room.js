@@ -167,6 +167,17 @@ Room.prototype.bringDoorsToTop = function () {
     return r;
 };
 
+Room.prototype.detroyDoors = function () {
+    var r       = this,
+        door;
+    for (door in r.d) {
+        if (r.d.hasOwnProperty(door)) {
+            r.d[door].sprite.destroy();
+        }
+    }
+    return r;
+};
+
 Room.prototype.create = function (door) {
     var r       = this;
     r.tilemap   = r.g.add.tilemap(r.name);
@@ -253,5 +264,6 @@ Room.prototype.destroy = function () {
             r.l[layer].destroy();
         }
     }
+    r.detroyDoors();
     return r;
 };

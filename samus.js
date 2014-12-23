@@ -605,6 +605,34 @@ Samus.prototype.airWalkRight = function () {
     return s;
 };
 
+Samus.prototype.hJump = function () {
+    var s   = this;
+    if (s.is('left')) {
+        if (s.isExclusiveDirection() && s.b.right.isDown) {
+            s.body.velocity.x = s.body.velocity.x * -1;
+            s.set('left', false);
+            s.set('right', true);
+            s.set('turning', false);
+            s.sprite.animations.stop();
+            s.sprite.animations.play('hJumpRight');
+        } else {
+            s.body.velocity.x = -90;
+        }
+    } else {
+        if (s.isExclusiveDirection() && s.b.left.isDown) {
+            s.body.velocity.x = s.body.velocity.x * -1;
+            s.set('right', false);
+            s.set('left', true);
+            s.set('turning', false);
+            s.sprite.animations.stop();
+            s.sprite.animations.play('hJumpLeft');
+        } else {
+            s.body.velocity.x = 90;
+        }
+    }
+    return s;
+};
+
 Samus.prototype.jump = function () {
     var s   = this;
     s.set('jumpPossible', false);
@@ -690,7 +718,13 @@ Samus.prototype.grabEdge = function () {
         i,
         tile,
         spacingY,
-        above;
+        above,
+        now             = new Date(),
+        gripFall        = s.state.gripFall.is,
+        gripFallSince   = now - s.state.gripFall.since;
+    if (!gripFall && gripFallSince < 200) {
+        return s;
+    }
     for (i = 0; i < gripTiles.length; i += 1) {
         tile = gripTiles[i];
         if (tile.index > -1) {
@@ -714,6 +748,8 @@ Samus.prototype.grabEdge = function () {
                 if (above && above.index == -1) {
                     s.set('hJump', false);
                     s.set('vJump', false);
+                    s.set('falling', false);
+                    s.set('turning', false);
                     s.body.velocity.y = 0;
                     s.body.velocity.x = 0;
                     s.body.position.y = tile.worldY;
@@ -745,9 +781,9 @@ Samus.prototype.gripFall = function () {
     s.set('gripClimb', false);
     s.sprite.animations.stop();
     if (s.is('left')) {
-        s.sprite.animations.play('standLeft');
+        s.sprite.animations.play('fallLeft');
     } else {
-        s.sprite.animations.play('standRight');
+        s.sprite.animations.play('fallRight');
     }
     s.setSpriteOffset(0,0);
     return s;
@@ -923,11 +959,7 @@ Samus.prototype.updateMovement = function () {
         }
     }
     if (s.is('hJump')) {
-        if (s.is('left')) {
-            s.body.velocity.x = -90;
-        } else {
-            s.body.velocity.x = 90;
-        }
+        s.hJump();
     }
     if (s.body.velocity.y > 0 && s.isExclusiveDirection()) {
         s.grabEdge();
