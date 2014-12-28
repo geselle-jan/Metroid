@@ -342,7 +342,7 @@ Samus.prototype.isntGravFree = function () {
 
 Samus.prototype.isOnGround = function () {
     var s   = this;
-    return !(s.isnt('onGround', 2) || (!s.body.onFloor() && s.body.velocity.y < 0));
+    return !(s.isnt('onGround', 4) || (!s.body.onFloor() && s.body.velocity.y < 0));
 };
 
 Samus.prototype.isntOnGround = function () {
