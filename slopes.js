@@ -85,7 +85,7 @@
         if (collides) {
             body.velocityPunish.x = 0;
         }
-        //body.y = Math.round(body.position.y);
+        body.y = Math.ceil(body.position.y);
         return collides;
     };
 
