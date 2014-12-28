@@ -347,7 +347,7 @@ Samus.prototype.isOnGround = function () {
 
 Samus.prototype.isntOnGround = function () {
     var s   = this;
-    return s.isnt('onGround', 2);
+    return !s.isOnGround();
 };
 
 Samus.prototype.setSpriteOffset = function (x, y) {
