@@ -84,8 +84,9 @@
         var collides = this.separateTile(i, body, tile);
         if (collides) {
             body.velocityPunish.x = 0;
+            body.blocked.down = true;
         }
-        body.y = Math.round(body.position.y);
+        //body.y = Math.round(body.position.y);
         return collides;
     };
 
